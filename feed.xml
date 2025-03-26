@@ -3,1754 +3,1900 @@
     <title>GraphQL</title>
     <link href="https://aymengn.github.io/graphql/feed.xml" rel="self" />
     <link href="https://aymengn.github.io/graphql" />
-    <updated>2025-03-26T16:47:54+01:00</updated>
+    <updated>2025-03-26T18:24:25+01:00</updated>
     <author>
         <name>aymen gn</name>
     </author>
     <id>https://aymengn.github.io/graphql</id>
 
     <entry>
-        <title>Setting Up GraphQL in a Django Project</title>
+        <title>GraphQL in Svelte: A Lightweight Approach</title>
         <author>
             <name>aymen gn</name>
         </author>
-        <link href="https://aymengn.github.io/graphql/setting-up-graphql-in-a-django-project.html"/>
-        <id>https://aymengn.github.io/graphql/setting-up-graphql-in-a-django-project.html</id>
+        <link href="https://aymengn.github.io/graphql/graphql-in-svelte-a-lightweight-approach.html"/>
+        <id>https://aymengn.github.io/graphql/graphql-in-svelte-a-lightweight-approach.html</id>
 
-        <updated>2025-03-26T16:45:52+01:00</updated>
+        <updated>2025-03-26T18:22:10+01:00</updated>
             <summary>
                 <![CDATA[
-                    # Setting Up GraphQL in a Django Project: A Step-by-Step Guide GraphQL has rapidly gained popularity as a modern alternative to REST APIs due to its flexibility, efficiency, and ability to fetch exactly the data you need. If you're working on a Django project and&hellip;
+                    In the ever-evolving landscape of web development, combining modern tools and frameworks can lead to powerful and efficient applications. One such combination that has gained significant traction is GraphQL with Svelte. While GraphQL revolutionizes how we fetch data by allowing clients to request exactly what&hellip;
                 ]]>
             </summary>
         <content type="html">
             <![CDATA[
-                <p># Setting Up GraphQL in a Django Project: A Step-by-Step Guide<br><br>GraphQL has rapidly gained popularity as a modern alternative to REST APIs due to its flexibility, efficiency, and ability to fetch exactly the data you need. If you're working on a Django project and want to integrate GraphQL, this guide will walk you through the process step-by-step.<br><br>## Why Use GraphQL with Django?<br><br>Before diving into the setup, let's quickly recap why you might want to use GraphQL in your Django project:<br><br>1. **Efficient Data Fetching**: GraphQL allows clients to request only the data they need, reducing over-fetching and under-fetching issues common with REST APIs.<br>2. **Strong Typing**: GraphQL enforces a schema that defines the structure of your API, making it easier to maintain and document.<br>3. **Single Endpoint**: Unlike REST APIs, which typically require multiple endpoints for different resources, GraphQL uses a single endpoint for all queries and mutations.<br>4. **Real-Time Data**: GraphQL supports subscriptions, enabling real-time updates for applications that require live data.<br><br>Now that we understand the benefits, let’s set up GraphQL in a Django project!<br><br>---<br><br>## Prerequisites<br><br>Before starting, ensure you have the following:<br><br>1. Python installed (preferably version 3.8 or higher).<br>2. A basic understanding of Django.<br>3. A Django project already set up. If not, you can create one using `django-admin startproject`.<br><br>---<br><br>## Step 1: Install Required Packages<br><br>To integrate GraphQL into your Django project, you'll need the `graphene-django` library. This package provides tools to build GraphQL schemas and integrates seamlessly with Django.<br><br>Run the following command to install it:<br><br>```bash<br>pip install graphene-django<br>```<br><br>---<br><br>## Step 2: Update `settings.py`<br><br>Once `graphene-django` is installed, you need to configure it in your Django project.<br><br>1. Add `'graphene_django'` to the `INSTALLED_APPS` list in your `settings.py` file:<br><br>   ```python<br>   INSTALLED_APPS = [<br>       ...<br>       'graphene_django',<br>   ]<br>   ```<br><br>2. Define the GraphQL schema location. Add the following line to your `settings.py`:<br><br>   ```python<br>   GRAPHENE = {<br>       'SCHEMA': 'your_project_name.schema.schema'<br>   }<br>   ```<br><br>   Replace `your_project_name` with the name of your Django project.<br><br>---<br><br>## Step 3: Create a GraphQL Schema<br><br>The schema defines the structure of your GraphQL API. It includes queries, mutations, and types.<br><br>1. Create a new file named `schema.py` in your project directory (or app directory if you prefer).<br><br>2. Define a basic schema. For example:<br><br>   ```python<br>   import graphene<br>   from graphene_django.types import DjangoObjectType<br>   from .models import YourModel  # Replace with your actual model<br><br>   class YourModelType(DjangoObjectType):<br>       class Meta:<br>           model = YourModel<br><br>   class Query(graphene.ObjectType):<br>       all_items = graphene.List(YourModelType)<br><br>       def resolve_all_items(self, info):<br>           return YourModel.objects.all()<br><br>   schema = graphene.Schema(query=Query)<br>   ```<br><br>   In this example:<br>   - `YourModelType` maps your Django model to a GraphQL type.<br>   - The `Query` class defines a query (`all_items`) to fetch all instances of `YourModel`.<br>   - The `resolve_all_items` method retrieves the data from the database.<br><br>---<br><br>## Step 4: Add GraphQL URLs<br><br>Next, you need to expose a GraphQL endpoint in your Django project.<br><br>1. Open your `urls.py` file and add the following:<br><br>   ```python<br>   from django.urls import path<br>   from graphene_django.views import GraphQLView<br><br>   urlpatterns = [<br>       ...<br>       path('graphql/', GraphQLView.as_view(graphiql=True)),<br>   ]<br>   ```<br><br>   - The `GraphQLView` provides the GraphQL endpoint.<br>   - The `graphiql=True` argument enables the GraphiQL interface, a built-in tool for testing your API.<br><br>2. Save the file and run your Django development server:<br><br>   ```bash<br>   python manage.py runserver<br>   ```<br><br>3. Navigate to `http://localhost:8000/graphql/` in your browser. You should see the GraphiQL interface, where you can test your queries.<br><br>---<br><br>## Step 5: Test Your GraphQL API<br><br>Using the GraphiQL interface, you can now test your GraphQL queries. For example, if you defined the `all_items` query earlier, you can run:<br><br>```graphql<br>query {<br>  allItems {<br>    id<br>    field1<br>    field2<br>  }<br>}<br>```<br><br>Replace `field1` and `field2` with the actual fields of your model. The response will include the requested data.<br><br>---<br><br>## Step 6: Add Mutations (Optional)<br><br>Mutations allow clients to modify data (e.g., create, update, or delete records). Here's how to add a mutation:<br><br>1. Update your `schema.py` file:<br><br>   ```python<br>   class CreateItem(graphene.Mutation):<br>       class Arguments:<br>           field1 = graphene.String(required=True)<br>           field2 = graphene.String(required=True)<br><br>       item = graphene.Field(YourModelType)<br><br>       def mutate(self, info, field1, field2):<br>           item = YourModel(field1=field1, field2=field2)<br>           item.save()<br>           return CreateItem(item=item)<br><br>   class Mutation(graphene.ObjectType):<br>       create_item = CreateItem.Field()<br><br>   schema = graphene.Schema(query=Query, mutation=Mutation)<br>   ```<br><br>2. Test the mutation in GraphiQL:<br><br>   ```graphql<br>   mutation {<br>     createItem(field1: "Value1", field2: "Value2") {<br>       item {<br>         id<br>         field1<br>         field2<br>       }<br>     }<br>   }<br>   ```<br><br>---<br><br>## Step 7: Secure Your GraphQL API<br><br>While GraphQL is powerful, it can also expose sensitive data if not properly secured. Consider the following best practices:<br><br>1. **Authentication and Authorization**: Use Django's authentication system to restrict access to certain queries or mutations.<br>2. **Rate Limiting**: Prevent abuse by limiting the number of requests a client can make.<br>3. **Depth Limiting**: Restrict the depth of nested queries to avoid performance issues.<br>4. **Disable Introspection in Production**: Introspection allows clients to explore your schema but can be disabled in production for security.<br><br>---<br><br>## Conclusion<br><br>Integrating GraphQL into a Django project is straightforward with the help of `graphene-django`. By following the steps outlined in this guide, you can set up a robust GraphQL API that empowers your frontend to fetch data efficiently and flexibly.<br><br>As you continue developing your project, explore advanced features like subscriptions for real-time updates, custom scalars, and batching to further enhance your API.<br><br>Happy coding!</p>
-            ]]>
-        </content>
-    </entry>
-    <entry>
-        <title>GraphQL and PostgreSQL Integration</title>
-        <author>
-            <name>aymen gn</name>
-        </author>
-        <link href="https://aymengn.github.io/graphql/graphql-and-postgresql-integration.html"/>
-        <id>https://aymengn.github.io/graphql/graphql-and-postgresql-integration.html</id>
-
-        <updated>2025-03-26T16:40:46+01:00</updated>
-            <summary>
-                <![CDATA[
-                    A Powerful Combination for Modern Applications In today's fast-paced world of software development, developers are constantly seeking ways to build efficient, scalable, and maintainable applications. Two technologies that have gained significant traction in recent years are GraphQL and PostgreSQL. GraphQL is a query language for&hellip;
-                ]]>
-            </summary>
-        <content type="html">
-            <![CDATA[
-                <p>A Powerful Combination for Modern Applications</p>
-<p>In today's fast-paced world of software development, developers are constantly seeking ways to build efficient, scalable, and maintainable applications. Two technologies that have gained significant traction in recent years are <strong>GraphQL</strong> and <strong>PostgreSQL</strong>. GraphQL is a query language for APIs that provides flexibility and precision in fetching data, while PostgreSQL is a robust, open-source relational database known for its reliability and advanced features.</p>
-<p>When combined, these two technologies create a powerful stack for building modern applications. In this blog post, we’ll explore how to integrate GraphQL with PostgreSQL, the benefits of this combination, and some practical examples to get you started.</p>
+                <p>In the ever-evolving landscape of web development, combining modern tools and frameworks can lead to powerful and efficient applications. One such combination that has gained significant traction is <strong>GraphQL</strong> with <strong>Svelte</strong>. While GraphQL revolutionizes how we fetch data by allowing clients to request exactly what they need, Svelte offers a lightweight, reactive framework for building user interfaces. Together, they form a dynamic duo that enables developers to create fast, efficient, and maintainable applications.</p>
+<p>In this blog post, we’ll explore how to integrate GraphQL into a Svelte application, focusing on a lightweight and straightforward approach. Whether you're new to Svelte or GraphQL, this guide will help you understand the basics and get started quickly.</p>
 <p>---</p>
-<h2>Why Integrate GraphQL with PostgreSQL?</h2>
-<p>Before diving into the integration process, let’s understand why combining GraphQL and PostgreSQL makes sense:</p>
-<h3>1. <strong>Flexibility in Data Fetching</strong></h3>
-<ul>
-<li>GraphQL allows clients to request exactly the data they need, reducing over-fetching and under-fetching issues common in REST APIs.</li>
-</ul>
-<ul>
-<li>PostgreSQL, with its rich querying capabilities, can efficiently handle complex queries generated by GraphQL.</li>
-</ul>
-<h3>2. <strong>Scalability</strong></h3>
-<ul>
-<li>PostgreSQL is designed to handle large datasets and high transaction volumes, making it ideal for backend systems.</li>
-</ul>
-<ul>
-<li>GraphQL’s resolver-based architecture ensures that only the required data is fetched, minimizing unnecessary database load.</li>
-</ul>
-<h3>3. <strong>Advanced Features</strong></h3>
-<ul>
-<li>PostgreSQL supports advanced features like JSONB, full-text search, and geospatial queries, which can be leveraged directly in GraphQL resolvers.</li>
-</ul>
-<ul>
-<li>GraphQL’s schema-first approach ensures type safety and clear API contracts, improving developer productivity.</li>
-</ul>
-<h3>4. <strong>Developer Experience</strong></h3>
-<ul>
-<li>The combination of GraphQL’s intuitive query language and PostgreSQL’s SQL-like syntax makes it easier for developers to work with both technologies seamlessly.</li>
-</ul>
+<h2>Why Use GraphQL with Svelte?</h2>
+<p>Before diving into the implementation, let's briefly discuss why GraphQL and Svelte are a great match:</p>
+<ol>
+<li><strong>Efficient Data Fetching</strong>: GraphQL allows you to query only the data you need, reducing over-fetching and under-fetching issues common with REST APIs.</li>
+</ol>
+<ol>
+<li><strong>Lightweight Framework</strong>: Svelte’s minimalistic nature ensures that your application remains lightweight and performant, even as it scales.</li>
+</ol>
+<ol>
+<li><strong>Reactivity</strong>: Svelte’s built-in reactivity makes it easy to update the UI when the data fetched via GraphQL changes.</li>
+</ol>
+<ol>
+<li><strong>Developer Experience</strong>: Both GraphQL and Svelte prioritize simplicity and developer-friendly workflows, making them a joy to work with.</li>
+</ol>
+<p>Now that we understand the "why," let’s move on to the "how."</p>
 <p>---</p>
-<h2>How to Integrate GraphQL with PostgreSQL</h2>
-<p>Integrating GraphQL with PostgreSQL involves several steps, including setting up the database, defining a GraphQL schema, and implementing resolvers to fetch data from PostgreSQL. Below is a step-by-step guide:</p>
-<h3>Step 1: Set Up PostgreSQL</h3>
-<p>First, ensure that PostgreSQL is installed and running on your system. You can use tools like <code>pgAdmin</code> or the <code>psql</code> command-line interface to interact with the database.</p>
-<p>Create a sample database and table:</p>
-<pre><code>sql
-CREATE DATABASE graphql_demo;</code></pre>
-<p>\c graphql_demo;</p>
-<pre><code></code></pre>
-<p>CREATE TABLE users (</p>
-<pre><code>
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100),
-    email VARCHAR(100) UNIQUE NOT NULL,
-    age INT
-);</code></pre>
-<p>INSERT INTO users (name, email, age) VALUES</p>
-<pre><code>
-('Alice', 'alice@example.com', 25),
-('Bob', 'bob@example.com', 30),
-('Charlie', 'charlie@example.com', 35);</code></pre>
-<h3>Step 2: Set Up a GraphQL Server</h3>
-<p>For this example, we’ll use <strong>Node.js</strong> with the <code>express-graphql</code> library to set up a GraphQL server. Install the necessary dependencies:</p>
+<h2>Setting Up a Svelte Project</h2>
+<p>To get started, you’ll need a Svelte project. If you don’t already have one, you can create one using <a href="https://vitejs.dev/">Vite</a>, a modern build tool that works seamlessly with Svelte:</p>
 <pre><code>bash
-npm init -y
-npm install express express-graphql graphql pg</code></pre>
-<h3>Step 3: Define the GraphQL Schema</h3>
-<p>Create a <code>schema.js</code> file to define the GraphQL schema:</p>
+npm create vite@latest my-svelte-app --template svelte
+cd my-svelte-app
+npm install</code></pre>
+<p>Once your project is set up, start the development server:</p>
+<pre><code>bash
+npm run dev</code></pre>
+<p>Your Svelte app should now be running at <code>http://localhost:5173</code>.</p>
+<p>---</p>
+<h2>Adding GraphQL to Your Svelte App</h2>
+<p>There are multiple ways to integrate GraphQL into a Svelte application. For a lightweight approach, we’ll use the <a href="https://github.com/jasonkuhrt/graphql-request"><code>graphql-request</code></a> library, a minimal GraphQL client that works well with Svelte.</p>
+<h3>Step 1: Install Dependencies</h3>
+<p>Install <code>graphql-request</code> and its peer dependency, <code>graphql</code>:</p>
+<pre><code>bash
+npm install graphql-request graphql</code></pre>
+<h3>Step 2: Create a GraphQL Client</h3>
+<p>Create a file named <code>graphqlClient.js</code> in the <code>src</code> directory. This file will initialize the GraphQL client and define a reusable function for making queries:</p>
 <pre><code>javascript
-const { GraphQLObjectType, GraphQLSchema, GraphQLString, GraphQLInt, GraphQLList } = require('graphql');</code></pre>
-<p>// Define the User type</p>
+// src/graphqlClient.js
+import { GraphQLClient, gql } from 'graphql-request';</code></pre>
+<p>const endpoint = 'https://your-graphql-endpoint.com/graphql'; // Replace with your GraphQL endpoint</p>
 <pre><code>
-const UserType = new GraphQLObjectType({
-    name: 'User',
-    fields: () =&gt; ({
-        id: { type: GraphQLInt },
-        name: { type: GraphQLString },
-        email: { type: GraphQLString },
-        age: { type: GraphQLInt }
-    })
-});</code></pre>
-<p>// Define the Root Query</p>
-<pre><code>
-const RootQuery = new GraphQLObjectType({
-    name: 'RootQueryType',
-    fields: {
-        users: {
-            type: new GraphQLList(UserType),
-            resolve(parent, args, context) {
-                return context.db.query('SELECT * FROM users').then(res =&gt; res.rows);
-            }
-        }
-    }
-});</code></pre>
-<p>module.exports = new GraphQLSchema({</p>
-<pre><code>
-    query: RootQuery
-});</code></pre>
-<h3>Step 4: Connect to PostgreSQL</h3>
-<p>Create an <code>index.js</code> file to set up the Express server and connect to PostgreSQL:</p>
-<pre><code>javascript
-const express = require('express');
-const { graphqlHTTP } = require('express-graphql');
-const { Pool } = require('pg');
-const schema = require('./schema');</code></pre>
-<p>// Create a PostgreSQL connection pool</p>
-<pre><code>
-const db = new Pool({
-    user: 'your_username',
-    host: 'localhost',
-    database: 'graphql_demo',
-    password: 'your_password',
-    port: 5432
-});</code></pre>
-<p>// Initialize Express app</p>
-<pre><code>
-const app = express();</code></pre>
-<p>// Set up GraphQL endpoint</p>
-<pre><code>
-app.use('/graphql', graphqlHTTP({
-    schema,
-    graphiql: true, // Enable GraphiQL for testing
-    context: { db } // Pass the database connection to resolvers
-}));</code></pre>
-<p>// Start the server</p>
-<pre><code>
-app.listen(4000, () =&gt; {
-    console.log('Server is running on http://localhost:4000/graphql');
-});</code></pre>
-<h3>Step 5: Test the Integration</h3>
-<p>Run the server:</p>
-<pre><code>bash
-node index.js</code></pre>
-<p>Open your browser and navigate to <code>http://localhost:4000/graphql</code>. Use the GraphiQL interface to test queries. For example:</p>
-<pre><code>graphql
-{
-  users {
-    id
-    name
-    email
-    age
-  }
-}</code></pre>
-<p>This query will fetch all users from the <code>users</code> table in PostgreSQL.</p>
-<p>---</p>
-<h2>Benefits of This Integration</h2>
-<ol>
-<li><strong>Efficient Data Fetching</strong>: Clients can request only the fields they need, reducing bandwidth usage and improving performance.</li>
-</ol>
-<ol>
-<li><strong>Strong Typing</strong>: GraphQL’s schema ensures type safety, reducing runtime errors.</li>
-</ol>
-<ol>
-<li><strong>Scalability</strong>: PostgreSQL’s robustness and GraphQL’s resolver-based architecture make this stack suitable for large-scale applications.</li>
-</ol>
-<ol>
-<li><strong>Rapid Development</strong>: Tools like GraphiQL and libraries like <code>pg</code> simplify development and debugging.</li>
-</ol>
-<p>---</p>
-<h2>Advanced Use Cases</h2>
-<p>Once you’ve mastered the basics, you can explore advanced features such as:</p>
-<ul>
-<li><strong>Mutations</strong>: Implement GraphQL mutations to insert, update, or delete data in PostgreSQL.</li>
-</ul>
-<ul>
-<li><strong>Pagination</strong>: Add pagination support for large datasets using <code>LIMIT</code> and <code>OFFSET</code> in SQL queries.</li>
-</ul>
-<ul>
-<li><strong>Authentication</strong>: Secure your GraphQL API using JWT or OAuth and enforce access control at the resolver level.</li>
-</ul>
-<ul>
-<li><strong>Subscriptions</strong>: Use WebSocket-based subscriptions to enable real-time updates.</li>
-</ul>
-<p>---</p>
-<h2>Conclusion</h2>
-<p>The integration of GraphQL and PostgreSQL offers a compelling solution for building modern, efficient, and scalable applications. By leveraging GraphQL’s flexibility and PostgreSQL’s power, developers can create APIs that are both developer-friendly and performant. Whether you’re building a small project or a large enterprise application, this combination is worth considering.</p>
-<p>Start experimenting with the example provided, and explore how GraphQL and PostgreSQL can transform your development workflow. Happy coding!</p>
-<p>---</p>
-<p><strong>Further Reading:</strong></p>
-<ul>
-<li><a href="https://graphql.org/">GraphQL Official Documentation</a></li>
-</ul>
-<ul>
-<li><a href="https://www.postgresql.org/docs/">PostgreSQL Documentation</a></li>
-<li><a href="https://aymengn.github.io/graphql/setting-up-graphql-in-a-django-project.html">Setting Up GraphQL in a Django Project</a></li>
-</ul>
-<ul>
-<li><a href="https://www.apollographql.com/docs/">Building GraphQL APIs with Node.js</a></li>
-</ul>
-            ]]>
-        </content>
-    </entry>
-    <entry>
-        <title>Using GraphQL with MongoDB and Mongoose</title>
-        <author>
-            <name>aymen gn</name>
-        </author>
-        <link href="https://aymengn.github.io/graphql/using-graphql-with-mongodb-and-mongoose.html"/>
-        <id>https://aymengn.github.io/graphql/using-graphql-with-mongodb-and-mongoose.html</id>
-
-        <updated>2025-03-26T16:35:40+01:00</updated>
-            <summary>
-                <![CDATA[
-                    Using GraphQL with MongoDB and Mongoose: A Comprehensive Guide GraphQL has revolutionized the way developers build APIs by providing a flexible and efficient way to query data. When combined with MongoDB, a NoSQL database, and Mongoose, an ODM (Object Data Modeling) library for Node.js, you&hellip;
-                ]]>
-            </summary>
-        <content type="html">
-            <![CDATA[
-                <h1>Using GraphQL with MongoDB and Mongoose: A Comprehensive Guide</h1>
-<p>GraphQL has revolutionized the way developers build APIs by providing a flexible and efficient way to query data. When combined with MongoDB, a NoSQL database, and Mongoose, an ODM (Object Data Modeling) library for Node.js, you can create powerful, scalable, and performant applications. In this blog post, we’ll explore how to integrate GraphQL with MongoDB and Mongoose to build a robust backend.</p>
-<p>---</p>
-<h2>Why Use GraphQL with MongoDB and Mongoose?</h2>
-<ol>
-<li><strong>Efficient Data Fetching</strong>: GraphQL allows clients to request only the data they need, reducing over-fetching and under-fetching issues commonly associated with REST APIs.</li>
-</ol>
-<ol>
-<li><strong>Schema-Driven Development</strong>: GraphQL enforces a strongly-typed schema, ensuring consistency between the frontend and backend.</li>
-</ol>
-<ol>
-<li><strong>MongoDB's Flexibility</strong>: MongoDB's document-based structure aligns well with GraphQL's hierarchical data model, making it easy to map queries to database operations.</li>
-</ol>
-<ol>
-<li><strong>Mongoose Simplifies ORM</strong>: Mongoose provides a schema-based solution for modeling MongoDB data, offering features like validation, middleware, and population of references.</li>
-</ol>
-<p>---</p>
-<h2>Prerequisites</h2>
-<p>Before diving into the implementation, ensure you have the following installed:</p>
-<ul>
-<li>Node.js and npm</li>
-</ul>
-<ul>
-<li>MongoDB (locally or via Atlas)</li>
-</ul>
-<ul>
-<li>Basic knowledge of JavaScript, Node.js, and GraphQL</li>
-</ul>
-<p>---</p>
-<h2>Step 1: Setting Up the Project</h2>
-<p>Start by initializing a new Node.js project:</p>
-<pre><code>bash
-mkdir graphql-mongodb-mongoose
-cd graphql-mongodb-mongoose
-npm init -y</code></pre>
-<p>Install the necessary dependencies:</p>
-<pre><code>bash
-npm install express express-graphql graphql mongoose</code></pre>
-<p>Here’s what each package does:</p>
-<ul>
-<li><code>express</code>: A web framework for Node.js.</li>
-</ul>
-<ul>
-<li><code>express-graphql</code>: Middleware to integrate GraphQL with Express.</li>
-</ul>
-<ul>
-<li><code>graphql</code>: The core GraphQL library.</li>
-</ul>
-<ul>
-<li><code>mongoose</code>: An ODM for MongoDB.</li>
-</ul>
-<p>---</p>
-<h2>Step 2: Connecting to MongoDB</h2>
-<p>Create a file named <code>db.js</code> to handle the MongoDB connection using Mongoose:</p>
-<pre><code>javascript
-const mongoose = require('mongoose');</code></pre>
-<p>const connectDB = async () =&gt; {</p>
+const client = new GraphQLClient(endpoint);</code></pre>
+<p>export async function fetchData(query, variables = {}) {</p>
 <pre><code>
   try {
-    await mongoose.connect('mongodb://localhost:27017/graphql-demo', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log('MongoDB connected');
+    const data = await client.request(query, variables);
+    return data;
   } catch (error) {
-    console.error('MongoDB connection error:', error);
-    process.exit(1);
+    console.error('GraphQL Error:', error);
+    throw error;
   }
-};</code></pre>
-<p><code>module.exports = connectDB;</code></p>
+}</code></pre>
+<p><code>export { gql };</code></p>
 <p> </p>
-<p>Replace <code>mongodb://localhost:27017/graphql-demo</code> with your MongoDB connection string if you're using a remote database.</p>
-<p>---</p>
-<h2>Step 3: Defining the Mongoose Schema</h2>
-<p>Let’s define a simple <code>User</code> model. Create a file named <code>models/User.js</code>:</p>
+<p>Replace <code>https://your-graphql-endpoint.com/graphql</code> with the URL of your GraphQL API.</p>
+<h3>Step 3: Write a Query</h3>
+<p>Let’s say you have a GraphQL API that provides information about books. Here’s an example query to fetch a list of books:</p>
 <pre><code>javascript
-const mongoose = require('mongoose');</code></pre>
-<p>const userSchema = new mongoose.Schema({</p>
+// src/queries.js
+import { gql } from './graphqlClient';</code></pre>
+<p>export const GET_BOOKS = gql<code></code></p>
 <pre><code>
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  age: { type: Number, default: 18 },
-});</code></pre>
-<p><code>module.exports = mongoose.model('User', userSchema);</code></p>
-<p> </p>
-<p>This schema defines a <code>User</code> with fields for <code>name</code>, <code>email</code>, and <code>age</code>.</p>
-<p>---</p>
-<h2>Step 4: Setting Up GraphQL</h2>
-<p>Now, let’s set up the GraphQL server. Create a file named <code>server.js</code>:</p>
-<pre><code>javascript
-const express = require('express');
-const { graphqlHTTP } = require('express-graphql');
-const { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLList, GraphQLInt, GraphQLNonNull } = require('graphql');
-const mongoose = require('mongoose');
-const User = require('./models/User');
-const connectDB = require('./db');</code></pre>
-<p>// Connect to MongoDB</p>
-<pre><code>
-connectDB();</code></pre>
-<p>// Define GraphQL types</p>
-<pre><code>
-const UserType = new GraphQLObjectType({
-  name: 'User',
-  fields: () =&gt; ({
-    id: { type: GraphQLString },
-    name: { type: GraphQLString },
-    email: { type: GraphQLString },
-    age: { type: GraphQLInt },
-  }),
-});</code></pre>
-<p>// Define Root Query</p>
-<pre><code>
-const RootQuery = new GraphQLObjectType({
-  name: 'RootQueryType',
-  fields: {
-    users: {
-      type: new GraphQLList(UserType),
-      resolve(parent, args) {
-        return User.find();
-      },
-    },
-    user: {
-      type: UserType,
-      args: { id: { type: GraphQLString } },
-      resolve(parent, args) {
-        return User.findById(args.id);
-      },
-    },
-  },
-});</code></pre>
-<p>// Define Mutations</p>
-<pre><code>
-const Mutation = new GraphQLObjectType({
-  name: 'Mutation',
-  fields: {
-    addUser: {
-      type: UserType,
-      args: {
-        name: { type: new GraphQLNonNull(GraphQLString) },
-        email: { type: new GraphQLNonNull(GraphQLString) },
-        age: { type: GraphQLInt },
-      },
-      resolve(parent, args) {
-        const user = new User({
-          name: args.name,
-          email: args.email,
-          age: args.age,
-        });
-        return user.save();
-      },
-    },
-    deleteUser: {
-      type: UserType,
-      args: { id: { type: new GraphQLNonNull(GraphQLString) } },
-      resolve(parent, args) {
-        return User.findByIdAndDelete(args.id);
-      },
-    },
-  },
-});</code></pre>
-<p>// Create Schema</p>
-<pre><code>
-const schema = new GraphQLSchema({
-  query: RootQuery,
-  mutation: Mutation,
-});</code></pre>
-<p>// Set up Express server</p>
-<pre><code>
-const app = express();
-app.use('/graphql', graphqlHTTP({ schema, graphiql: true }));</code></pre>
-<p>const PORT = process.env.PORT || 4000;</p>
-<pre><code>
-app.listen(PORT, () =&gt; {
-  console.log(Server running on port ${PORT}); });</code></pre>
-<p>---</p>
-<h2>Step 5: Testing the API</h2>
-<p>Start the server:</p>
-<pre><code>bash
-node server.js</code></pre>
-<p>Navigate to <code>http://localhost:4000/graphql</code> in your browser to access the GraphiQL interface. Here are some sample queries and mutations:</p>
-<h3>Query All Users</h3>
-<pre><code>graphql
-{
-  users {
-    id
-    name
-    email
-    age
-  }
-}</code></pre>
-<h3>Query a Single User</h3>
-<pre><code>graphql
-{
-  user(id: "USER_ID") {
-    name
-    email
-  }
-}</code></pre>
-<h3>Add a New User</h3>
-<p>``<code>graphql
-mutation {
-  addUser(name: "John Doe", email: "john@example.com", age: 25) {</code>`<code></code></p>
-<p>---</p>
-<p><code></code></p>
-<h2>Step 6: Enhancements and Best Practices</h2>
-<p><code>
-</code><code></code></p>
-<ol>
-<li><code><strong>Validation</strong>: Use libraries like </code>joi<code> or Mongoose validators to enforce stricter input validation.</code></li>
-</ol>
-<p><code>
-</code><code></code></p>
-<ol>
-<li><code><strong>Pagination</strong>: Implement pagination for large datasets using </code>limit<code> and </code>skip`.</li>
-</ol>
-<ol>
-<li><strong>Authentication</strong>: Secure your GraphQL API with JWT or OAuth.</li>
-</ol>
-<ol>
-<li><strong>Error Handling</strong>: Centralize error handling to provide meaningful feedback to clients.</li>
-</ol>
-<ol>
-<li><strong>Performance Optimization</strong>: Use DataLoader to batch and cache database requests.</li>
-</ol>
-<p>---</p>
-<h2>Conclusion</h2>
-<p>Combining GraphQL with MongoDB and Mongoose creates a powerful stack for building modern APIs. GraphQL’s flexibility and MongoDB’s scalability make them a perfect match for applications that require dynamic data fetching. By following the steps outlined in this guide, you can set up a robust backend that meets the demands of today’s web applications.</p>
-<p><a href="https://aymengn.github.io/graphql/graphql-and-postgresql-integration.html">Feel free to experiment with the code and exten</a></p>
-<p>GraphQL and PostgreSQL Integrationd it to su</p>
-<p><a href="https://aymengn.github.io/graphql/setting-up-graphql-in-a-django-project.html">Setting Up GraphQL in a Django Projectit your specific use case. Happy coding! 🚀</a></p>
-            ]]>
-        </content>
-    </entry>
-    <entry>
-        <title>Building a GraphQL API with Node.js and Express</title>
-        <author>
-            <name>aymen gn</name>
-        </author>
-        <link href="https://aymengn.github.io/graphql/building-a-graphql-api-with-nodejs-and-express.html"/>
-        <id>https://aymengn.github.io/graphql/building-a-graphql-api-with-nodejs-and-express.html</id>
-
-        <updated>2025-03-26T16:30:34+01:00</updated>
-            <summary>
-                <![CDATA[
-                    In today's world of modern web development, APIs are the backbone of many applications. RESTful APIs have long been the standard for building server-side applications, but as the complexity of data requirements grows, developers are increasingly turning to GraphQL as a more flexible and efficient&hellip;
-                ]]>
-            </summary>
-        <content type="html">
-            <![CDATA[
-                <p>In today's world of modern web development, APIs are the backbone of many applications. RESTful APIs have long been the standard for building server-side applications, but as the complexity of data requirements grows, developers are increasingly turning to <strong>GraphQL</strong> as a more flexible and efficient alternative. In this blog post, we’ll walk through the process of building a GraphQL API using <strong>Node.js</strong> and <strong>Express</strong>, two of the most popular tools in the JavaScript ecosystem.</p>
-<p>---</p>
-<h2>What is GraphQL?</h2>
-<p>Before diving into the implementation, let’s briefly discuss what GraphQL is and why it’s gaining popularity.</p>
-<p>GraphQL is a query language for APIs and a runtime for executing those queries with your existing data. Unlike REST, where you define fixed endpoints that return predefined data structures, GraphQL allows clients to request exactly the data they need, nothing more, nothing less. This flexibility makes it particularly useful for applications with complex data requirements or when working with multiple clients (e.g., web, mobile, desktop).</p>
-<p>Key benefits of GraphQL:</p>
-<ul>
-<li><strong>Efficient data fetching</strong>: Clients can request only the fields they need.</li>
-</ul>
-<ul>
-<li><strong>Single endpoint</strong>: All queries and mutations are sent to a single endpoint.</li>
-</ul>
-<ul>
-<li><strong>Strongly typed schema</strong>: GraphQL enforces a schema that defines the structure of your data, making it easier to understand and maintain.</li>
-</ul>
-<p>---</p>
-<h2>Prerequisites</h2>
-<p>To follow along with this tutorial, you’ll need the following:</p>
-<ol>
-<li><strong>Node.js</strong> installed on your machine (v14 or higher recommended).</li>
-</ol>
-<ol>
-<li>Basic knowledge of JavaScript and Node.js.</li>
-</ol>
-<ol>
-<li>A code editor like Visual Studio Code.</li>
-</ol>
-<ol>
-<li>Familiarity with npm (Node Package Manager).</li>
-</ol>
-<p>---</p>
-<h2>Setting Up the Project</h2>
-<p>Let’s start by setting up a new Node.js project.</p>
-<h3>Step 1: Initialize the Project</h3>
-<p>Open your terminal and run the following commands:</p>
-<pre><code>bash
-mkdir graphql-express-api
-cd graphql-express-api
-npm init -y</code></pre>
-<p>This will create a new directory for your project and initialize it with a <code>package.json</code> file.</p>
-<h3>Step 2: Install Dependencies</h3>
-<p>We’ll need several packages to build our GraphQL API:</p>
-<ul>
-<li><code>express</code>: The web framework for Node.js.</li>
-</ul>
-<ul>
-<li><code>graphql</code>: The core library for GraphQL.</li>
-</ul>
-<ul>
-<li><code>express-graphql</code>: Middleware to integrate GraphQL with Express.</li>
-</ul>
-<ul>
-<li><code>nodemon</code>: A utility to automatically restart the server during development.</li>
-</ul>
-<p>Install these dependencies by running:</p>
-<pre><code>bash
-npm install express graphql express-graphql
-npm install --save-dev nodemon</code></pre>
-<h3>Step 3: Configure Nodemon</h3>
-<p>To make development easier, add a script to your <code>package.json</code> to use <code>nodemon</code>:</p>
-<pre><code>json
-"scripts": {
-  "start": "nodemon index.js"
-}</code></pre>
-<p>Now, when you run <code>npm start</code>, <code>nodemon</code> will watch for changes and restart the server automatically.</p>
-<p>---</p>
-<h2>Building the GraphQL API</h2>
-<h3>Step 1: Create the Server</h3>
-<p>Create a file named <code>index.js</code> in the root of your project and add the following code:</p>
-<pre><code>javascript
-const express = require('express');
-const { graphqlHTTP } = require('express-graphql');
-const { buildSchema } = require('graphql');</code></pre>
-<p>// Define a simple schema</p>
-<pre><code>
-const schema = buildSchema(
-  type Query {
-    hello: String
-  }
-);</code></pre>
-<p>// Define a resolver function for the 'hello' query</p>
-<pre><code>const root = { hello: () =&gt; 'Hello, world!' };</code></pre>
-<p>// Create an Express app</p>
-<pre><code>const app = express();</code></pre>
-<p>// Set up the GraphQL endpoint</p>
-<pre><code>app.use('/graphql', graphqlHTTP({ schema: schema, rootValue: root, graphiql: true, // Enable the GraphiQL interface for testing }));</code></pre>
-<p>// Start the server</p>
-<pre><code>const PORT = 4000; app.listen(PORT, () =&gt; { console.log(Server is running at http://localhost:${PORT}/graphql); });</code></pre>
-<h3>Step 2: Test the API</h3>
-<p>Run the server using:</p>
-<pre><code>bash
-npm start</code></pre>
-<p>Navigate to <code>http://localhost:4000/graphql</code> in your browser. You should see the <strong>GraphiQL</strong> interface, which is a built-in tool for testing GraphQL queries.</p>
-<p>Try running the following query:</p>
-<pre><code>graphql
-{
-  hello
-}</code></pre>
-<p>You should receive the response:</p>
-<pre><code>json
-{
-  "data": {
-    "hello": "Hello, world!"
-  }
-}</code></pre>
-<p>Congratulations! You’ve just created your first GraphQL API.</p>
-<p>---</p>
-<h2>Expanding the API</h2>
-<p>Let’s make the API more functional by adding support for querying a list of users.</p>
-<h3>Step 1: Define the Schema</h3>
-<p>Update the schema in <code>index.js</code> to include a <code>User</code> type and a query to fetch users:</p>
-<pre><code>javascript
-const schema = buildSchema(
-  type User {
-    id: ID!
-    name: String!
-    email: String!
-  }</code></pre>
-<p>type Query {</p>
-<pre><code>
-    hello: String
-    getUsers: [User]
-  }
-);</code></pre>
-<h3>Step 2: Add Mock Data</h3>
-<p>Define some mock data to simulate a database:</p>
-<pre><code>javascript
-const users = [
-  { id: '1', name: 'Alice', email: 'alice@example.com' },
-  { id: '2', name: 'Bob', email: 'bob@example.com' },
-  { id: '3', name: 'Charlie', email: 'charlie@example.com' },
-];</code></pre>
-<h3>Step 3: Update the Resolver</h3>
-<p>Modify the resolver to include a function for fetching users:</p>
-<pre><code>javascript
-const root = {
-  hello: () =&gt; 'Hello, world!',
-  getUsers: () =&gt; users,
-};</code></pre>
-<h3>Step 4: Test the New Query</h3>
-<p>Restart the server and navigate to the GraphiQL interface. Run the following query:</p>
-<pre><code>graphql
-{
-  getUsers {
-    id
-    name
-    email
-  }
-}</code></pre>
-<p>You should receive a response like this:</p>
-<pre><code>json
-{
-  "data": {
-    "getUsers": [
-      {
-        "id": "1",
-        "name": "Alice",
-        "email": "alice@example.com"
-      },
-      {
-        "id": "2",
-        "name": "Bob",
-        "email": "bob@example.com"
-      },
-      {
-        "id": "3",
-        "name": "Charlie",
-        "email": "charlie@example.com"
-      }
-    ]
-  }
-}</code></pre>
-<p>---</p>
-<h2>Adding Mutations</h2>
-<p>Mutations allow clients to modify data on the server. Let’s add a mutation to create a new user.</p>
-<h3>Step 1: Update the Schema</h3>
-<p>Add a <code>Mutation</code> type to the schema:</p>
-<pre><code>javascript
-const schema = buildSchema(
-  type User {
-    id: ID!
-    name: String!
-    email: String!
-  }</code></pre>
-<p>type Query {</p>
-<pre><code>
-    hello: String
-    getUsers: [User]
-  }</code></pre>
-<p>type Mutation {</p>
-<pre><code>
-    createUser(name: String!, email: String!): User
-  }
-);</code></pre>
-<h3>Step 2: Update the Resolver</h3>
-<p>Add a resolver for the <code>createUser</code> mutation:</p>
-<pre><code>javascript
-const root = {
-  hello: () =&gt; 'Hello, world!',
-  getUsers: () =&gt; users,
-  createUser: ({ name, email }) =&gt; {
-    const newUser = { id: String(users.length + 1), name, email };
-    users.push(newUser);
-    return newUser;
-  },
-};</code></pre>
-<h3>Step 3: Test the Mutation</h3>
-<p>In GraphiQL, run the following mutation:</p>
-<pre><code>graphql
-mutation {
-  createUser(name: "Diana", email: "diana@example.com") {
-    id
-    name
-    email
-  }
-}</code></pre>
-<p>You should receive a response like this:</p>
-<pre><code>json
-{
-  "data": {
-    "createUser": {
-      "id": "4",
-      "name": "Diana",
-      "email": "diana@example.com"
+  query GetBooks {
+    books {
+      id
+      title
+      author
     }
   }
-}</code></pre>
-<p>Verify the new user by running the <code>getUsers</code> query again.</p>
-<p>---</p>
-<h2>Conclusion</h2>
-<p>In this tutorial, we’ve built a simple yet functional GraphQL API using Node.js and Express. We covered the basics of defining a schema, writing resolvers, and handling both queries and mutations. While this example uses mock data, you can easily extend it to work with a real database like MongoDB or PostgreSQL.</p>
-<p>GraphQL’s flexibility and efficiency make it an excellent choice for modern applications. By combining it with the power of Node.js and Express, you can build robust APIs that meet the needs of your clients and users.</p>
-<p><a href="https://aymengn.github.io/graphql/using-graphql-with-mongodb-and-mongoose.html">Using GraphQL with MongoDB and Mongoose</a></p>
-<p>Happy coding!</p>
-<p><a href="https://aymengn.github.io/graphql/graphql-and-postgresql-integration.html">GraphQL and PostgreSQL Integration</a></p>
-<p><a href="https://aymengn.github.io/graphql/setting-up-graphql-in-a-django-project.html">Setting Up GraphQL in a Django Project</a></p>
-            ]]>
-        </content>
-    </entry>
-    <entry>
-        <title>GraphQL Directives: @skip and @include</title>
-        <author>
-            <name>aymen gn</name>
-        </author>
-        <link href="https://aymengn.github.io/graphql/graphql-directives-skip-and-include.html"/>
-        <id>https://aymengn.github.io/graphql/graphql-directives-skip-and-include.html</id>
-
-        <updated>2025-03-26T16:25:28+01:00</updated>
-            <summary>
-                <![CDATA[
-                    GraphQL has revolutionized the way developers interact with APIs by offering a flexible, efficient, and strongly-typed query language. One of its standout features is the ability to control data retrieval using directives—special instructions that modify the execution of queries or mutations. Among the most commonly&hellip;
-                ]]>
-            </summary>
-        <content type="html">
-            <![CDATA[
-                <p>GraphQL has revolutionized the way developers interact with APIs by offering a flexible, efficient, and strongly-typed query language. One of its standout features is the ability to control data retrieval using <strong>directives</strong>—special instructions that modify the execution of queries or mutations. Among the most commonly used directives are <code>@skip</code> and <code>@include</code>, which allow developers to conditionally include or exclude fields in their queries. In this blog post, we’ll explore these directives in detail, explain their use cases, and provide practical examples to help you master them.</p>
-<p>---</p>
-<h2>What Are GraphQL Directives?</h2>
-<p>Before diving into <code>@skip</code> and <code>@include</code>, let’s briefly understand what directives are in GraphQL. Directives are annotations that can be added to a GraphQL query or mutation to influence how the query is executed. They provide a way to dynamically adjust the behavior of your queries based on runtime conditions.</p>
-<p>GraphQL comes with two built-in directives:</p>
-<ol>
-<li><strong><code>@skip</code></strong>: Skips a field or fragment if the specified condition is <code>true</code>.</li>
-</ol>
-<ol>
-<li><strong><code>@include</code></strong>: Includes a field or fragment only if the specified condition is <code>true</code>.</li>
-</ol>
-<p>Both directives accept a single argument, <code>if</code>, which is a boolean value. These directives are particularly useful when you need to fetch different sets of data based on user roles, permissions, or other dynamic factors.</p>
-<p>---</p>
-<h2>Understanding <code>@skip</code></h2>
-<p>The <code>@skip</code> directive allows you to omit certain fields or fragments from the query result if a specific condition evaluates to <code>true</code>. This is especially helpful when you want to exclude parts of a query under certain circumstances.</p>
-<h3>Syntax</h3>
-<pre><code>graphql
-field @skip(if: Boolean)</code></pre>
-<h3>Example</h3>
-<p>Imagine you have a query to fetch user details, but you want to skip the <code>email</code> field for users who are not administrators. Here's how you can achieve this using <code>@skip</code>:</p>
-<pre><code>graphql
-query GetUserDetails($isAdmin: Boolean!) {
-  user {
-    id
-    name
-    email @skip(if: $isAdmin)
-  }
-}</code></pre>
-<p>In this example:</p>
-<ul>
-<li>If <code>$isAdmin</code> is <code>false</code>, the <code>email</code> field will be included in the response.</li>
-</ul>
-<ul>
-<li>If <code>$isAdmin</code> is <code>true</code>, the <code>email</code> field will be skipped.</li>
-</ul>
-<h3>Use Case</h3>
-<p>The <code>@skip</code> directive is ideal for scenarios where you want to exclude sensitive or unnecessary data based on user roles, permissions, or other conditional logic.</p>
-<p>---</p>
-<h2>Understanding <code>@include</code></h2>
-<p>The <code>@include</code> directive works in the opposite way to <code>@skip</code>. It includes a field or fragment in the query result only if the specified condition evaluates to <code>true</code>. This is useful when you want to conditionally add fields to your query.</p>
-<h3>Syntax</h3>
-<pre><code>graphql
-field @include(if: Boolean)</code></pre>
-<h3>Example</h3>
-<p>Let’s say you’re building a dashboard and want to include additional analytics data only for premium users. You can use the <code>@include</code> directive to achieve this:</p>
-<pre><code>graphql
-query GetDashboardData($isPremiumUser: Boolean!) {
-  dashboard {
-    overview
-    analytics @include(if: $isPremiumUser)
-  }
-}</code></pre>
-<p>In this example:</p>
-<ul>
-<li>If <code>$isPremiumUser</code> is <code>true</code>, the <code>analytics</code> field will be included in the response.</li>
-</ul>
-<ul>
-<li>If <code>$isPremiumUser</code> is <code>false</code>, the <code>analytics</code> field will be excluded.</li>
-</ul>
-<h3>Use Case</h3>
-<p>The <code>@include</code> directive is perfect for situations where you want to fetch additional data only when certain conditions are met, such as feature flags, user preferences, or subscription tiers.</p>
-<p>---</p>
-<h2>Combining <code>@skip</code> and <code>@include</code></h2>
-<p>While <code>@skip</code> and <code>@include</code> serve opposite purposes, they can be used together in the same query to create more complex conditional logic. However, it’s important to note that both directives cannot be applied to the same field simultaneously. Doing so will result in an error.</p>
-<h3>Example</h3>
-<p>Here’s an example where both directives are used in the same query but on different fields:</p>
-<pre><code>graphql
-query GetUserProfile($isAdmin: Boolean!, $showSensitiveData: Boolean!) {
-  user {
-    id
-    name
-    email @skip(if: $isAdmin)
-    sensitiveData @include(if: $showSensitiveData)
-  }
-}</code></pre>
-<p>In this query:</p>
-<ul>
-<li>The <code>email</code> field will be skipped if <code>$isAdmin</code> is <code>true</code>.</li>
-</ul>
-<ul>
-<li>The <code>sensitiveData</code> field will be included only if <code>$showSensitiveData</code> is <code>true</code>.</li>
-</ul>
-<h3>Key Considerations</h3>
-<ul>
-<li>Avoid applying both <code>@skip</code> and <code>@include</code> to the same field, as this will cause conflicts.</li>
-</ul>
-<ul>
-<li>Use variables (<code>$isAdmin</code>, <code>$showSensitiveData</code>) to make your queries dynamic and reusable.</li>
-</ul>
-<p>---</p>
-<h2>Practical Tips for Using <code>@skip</code> and <code>@include</code></h2>
-<ol>
-<li><strong>Keep Queries Readable</strong>: While directives add flexibility, overusing them can make your queries harder to read. Use them judiciously to maintain clarity.</li>
-</ol>
-<ol>
-<li><strong>Leverage Variables</strong>: Always use variables for the <code>if</code> argument to make your queries dynamic and adaptable to different scenarios.</li>
-</ol>
-<ol>
-<li><strong>Test Edge Cases</strong>: Ensure you test your queries with various combinations of <code>true</code> and <code>false</code> values for the <code>if</code> argument to verify the expected behavior.</li>
-</ol>
-<ol>
-<li><strong>Combine with Fragments</strong>: For complex queries, consider combining directives with fragments to keep your code DRY (Don’t Repeat Yourself).</li>
-</ol>
-<p>---</p>
-<h2>Conclusion</h2>
-<p>GraphQL directives like <code>@skip</code> and <code>@include</code> empower developers to build highly dynamic and efficient queries. By allowing you to conditionally include or exclude fields, these directives enable you to tailor your API responses to specific use cases without cluttering your schema or backend logic. Whether you’re managing user roles, handling feature flags, or optimizing data fetching, mastering these directives will undoubtedly enhance your GraphQL development skills.</p>
-<p>Next time you’re working on a GraphQL project, think about how <code>@skip</code> and <code>@include</code> can help you streamline your queries and deliver exactly the data you need. Happy coding!</p>
-<p>---</p>
-<p>Feel free to share your thoughts or questions in</p>
-<p>Building a GraphQL API with Node<a href="https://aymengn.github.io/graphql/building-a-graphql-api-with-nodejs-and-express.html">.</a>js and Exp</p>
-<p> </p>
-<p><a href="https://aymengn.github.io/graphql/graphql-and-postgresql-integration.html">GraphQL and PostgreSQL Integration</a></p>
-<p><a href="https://aymengn.github.io/graphql/setting-up-graphql-in-a-django-project.html">Setting Up GraphQL in a Django Project</a></p>
-            ]]>
-        </content>
-    </entry>
-    <entry>
-        <title>Understanding GraphQL Scalars and Enums</title>
-        <author>
-            <name>aymen gn</name>
-        </author>
-        <link href="https://aymengn.github.io/graphql/understanding-graphql-scalars-and-enums.html"/>
-        <id>https://aymengn.github.io/graphql/understanding-graphql-scalars-and-enums.html</id>
-
-        <updated>2025-03-26T16:19:42+01:00</updated>
-            <summary>
-                <![CDATA[
-                    GraphQL is a powerful query language for APIs that allows clients to request exactly the data they need. One of its core features is its type system, which ensures that both the client and server have a clear understanding of the structure and shape of&hellip;
-                ]]>
-            </summary>
-        <content type="html">
-            <![CDATA[
-                <p>GraphQL is a powerful query language for APIs that allows clients to request exactly the data they need. One of its core features is its type system, which ensures that both the client and server have a clear understanding of the structure and shape of the data being exchanged. Two fundamental building blocks of this type system are <strong>Scalars</strong> and <strong>Enums</strong>. In this blog post, we'll explore what these types are, how they work, and why they are essential in GraphQL.</p>
-<p>---</p>
-<h2>What Are Scalars?</h2>
-<p>Scalars are the most basic units of data in GraphQL. They represent primitive values such as strings, numbers, or booleans. Unlike objects, scalars cannot be broken down into smaller parts. They are the "leaf nodes" of a GraphQL query, meaning they represent the final data points returned by the API.</p>
-<h3>Built-in Scalars in GraphQL</h3>
-<p>GraphQL comes with a set of predefined scalar types:</p>
-<ol>
-<li><strong><code>Int</code></strong>: A signed 32-bit integer.</li>
-</ol>
-<ol>
-<li><strong><code>Float</code></strong>: A signed double-precision floating-point number.</li>
-</ol>
-<ol>
-<li><strong><code>String</code></strong>: A sequence of UTF-8 characters.</li>
-</ol>
-<ol>
-<li><strong><code>Boolean</code></strong>: <code>true</code> or <code>false</code>.</li>
-</ol>
-<ol>
-<li><strong><code>ID</code></strong>: A unique identifier, often used to refetch an object or as a key in a cache.</li>
-</ol>
-<p>For example, consider a simple query to fetch a user's details:</p>
-<pre><code>graphql
-query {
-  user(id: "1") {
-    id
-    name
-    age
-    isActive
-  }
-}</code></pre>
-<p>Here:</p>
-<ul>
-<li><code>id</code> is of type <code>ID</code>.</li>
-</ul>
-<ul>
-<li><code>name</code> is of type <code>String</code>.</li>
-</ul>
-<ul>
-<li><code>age</code> is of type <code>Int</code>.</li>
-</ul>
-<ul>
-<li><code>isActive</code> is of type <code>Boolean</code>.</li>
-</ul>
-<h3>Custom Scalars</h3>
-<p>While the built-in scalars cover many common use cases, GraphQL allows you to define custom scalars to handle more specific data types. For instance, you might want to create a <code>Date</code> scalar to represent dates in a standardized format.</p>
-<p>To define a custom scalar, you can declare it in your schema like this:</p>
-<pre><code>graphql
-scalar Date</code></pre>
-<p>On the server side, you would then provide serialization and deserialization logic for the <code>Date</code> scalar. For example, you could serialize a JavaScript <code>Date</code> object into an ISO string (<code>YYYY-MM-DD</code>) and parse it back when needed.</p>
-<p>Custom scalars are particularly useful for enforcing validation rules or handling complex data formats consistently across your API.</p>
-<p>---</p>
-<h2>What Are Enums?</h2>
-<p>Enums (short for enumerations) are another type of scalar in GraphQL, but they differ from regular scalars because their values are restricted to a predefined set of options. Enums are useful for fields that can only take on a limited number of discrete values.</p>
-<h3>Defining Enums in GraphQL</h3>
-<p>To define an enum, you list all possible values in your schema. For example, suppose you're building an e-commerce API and want to track the status of an order. You could define an <code>OrderStatus</code> enum like this:</p>
-<pre><code>graphql
-enum OrderStatus {
-  PENDING
-  SHIPPED
-  DELIVERED
-  CANCELLED
-}</code></pre>
-<p>Now, any field of type <code>OrderStatus</code> can only have one of these four values. This ensures consistency and prevents invalid data from being sent or received.</p>
-<h3>Using Enums in Queries</h3>
-<p>Here’s an example of how you might use the <code>OrderStatus</code> enum in a query:</p>
-<pre><code>graphql
-query {
-  orders(status: SHIPPED) {
-    id
-    status
-    createdAt
-  }
-}</code></pre>
-<p>In this query:</p>
-<ul>
-<li>The <code>status</code> argument is of type <code>OrderStatus</code>.</li>
-</ul>
-<ul>
-<li>The server will only return orders whose status matches the value <code>SHIPPED</code>.</li>
-</ul>
-<p>Enums make your API more intuitive by clearly documenting the possible values for a field. They also reduce errors by restricting input to valid options.</p>
-<p>---</p>
-<h2>Why Use Scalars and Enums?</h2>
-<h3>1. <strong>Strong Typing</strong></h3>
-<p>Scalars and enums enforce strong typing, ensuring that both the client and server agree on the structure and constraints of the data. This reduces bugs and improves developer confidence.</p>
-<h3>2. <strong>Validation</strong></h3>
-<p>Custom scalars and enums allow you to validate data at the schema level. For example, a <code>PositiveInt</code> scalar could ensure that only positive integers are accepted, while an <code>OrderStatus</code> enum ensures that only valid statuses are used.</p>
-<h3>3. <strong>Documentation</strong></h3>
-<p>By defining scalars and enums in your schema, you automatically generate documentation for your API. Tools like GraphiQL or Apollo Studio can display these definitions, making it easier for developers to understand and use your API.</p>
-<h3>4. <strong>Reusability</strong></h3>
-<p>Once defined, scalars and enums can be reused across multiple types and queries. For example, if you define a <code>Currency</code> enum, you can use it for pricing, discounts, and other financial fields throughout your schema.</p>
-<p>---</p>
-<h2>Practical Example: Combining Scalars and Enums</h2>
-<p>Let’s tie everything together with a practical example. Imagine you’re building a task management app. Your schema might look like this:</p>
-<pre><code>graphql
-scalar DateTime</code></pre>
-<p>enum TaskPriority {</p>
-<pre><code>
-  LOW
-  MEDIUM
-  HIGH
-}</code></pre>
-<p>type Task {</p>
-<pre><code>
-  id: ID!
-  title: String!
-  description: String
-  priority: TaskPriority!
-  dueDate: DateTime
-  isCompleted: Boolean!
-}</code></pre>
-<p>type Query {</p>
-<pre><code>
-  tasks(priority: TaskPriority): [Task!]!
-}</code></pre>
-<p>In this schema:</p>
-<ul>
-<li><code>DateTime</code> is a custom scalar for handling timestamps.</li>
-</ul>
-<ul>
-<li><code>TaskPriority</code> is an enum that restricts the priority values to <code>LOW</code>, <code>MEDIUM</code>, or <code>HIGH</code>.</li>
-</ul>
-<ul>
-<li>The <code>Task</code> type uses both scalars and enums to define its fields.</li>
-</ul>
-<p>A sample query might look like this:</p>
-<pre><code>graphql
-query {
-  tasks(priority: HIGH) {
-    id
-    title
-    priority
-    dueDate
-    isCompleted
-  }
-}</code></pre>
-<p>This query fetches all high-priority tasks along with their details. The use of scalars and enums ensures that the data is well-structured, validated, and easy to understand.</p>
-<p>---</p>
-<h2>Conclusion</h2>
-<p>Scalars and enums are foundational elements of GraphQL’s type system. Scalars represent primitive values, while enums restrict fields to a predefined set of options. Together, they enable strong typing, validation, and reusability, making your API more robust and developer-friendly.</p>
-<p>By leveraging custom scalars and enums, you can tailor your GraphQL schema to fit the specific needs of your application. Whether you’re working with dates, currencies, statuses, or other specialized data, scalars and enums provide the tools you need to build a clean, consistent, and maintainable API.</p>
-<p>So the next time you’re designing a GraphQL schema, don’t overlook the power of scalars and enums—they might just be the unsung heroes of your API!</p>
-<p>---</p>
-<p><a href="https://aymengn.github.io/graphql/graphql-directives-skip-and-include.html">What do you think about scalars and enums? H</a></p>
-<p>GraphQL Directives: @skip and @includeave</p>
-<p><a href="https://aymengn.github.io/graphql/building-a-graphql-api-with-nodejs-and-express.html">Building a GraphQL API with Node.js and Express you used them in your projects? Share your experiences in the comments below!</a></p>
-<p><a href="https://aymengn.github.io/graphql/using-graphql-with-mongodb-and-mongoose.html">Using GraphQL with MongoDB and Mongoose</a></p>
-<p><a href="https://aymengn.github.io/graphql/graphql-and-postgresql-integration.html">GraphQL and PostgreSQL Integration</a></p>
-            ]]>
-        </content>
-    </entry>
-    <entry>
-        <title>GraphQL Fragments: Reusing Query Logic</title>
-        <author>
-            <name>aymen gn</name>
-        </author>
-        <link href="https://aymengn.github.io/graphql/graphql-fragments-reusing-query-logic.html"/>
-        <id>https://aymengn.github.io/graphql/graphql-fragments-reusing-query-logic.html</id>
-
-        <updated>2025-03-26T16:14:38+01:00</updated>
-            <summary>
-                <![CDATA[
-                    Queries GraphQL is a powerful query language that allows developers to request exactly the data they need from an API. However, as applications grow in complexity, queries can become repetitive and difficult to maintain. This is where GraphQL Fragments come into play. Fragments allow you&hellip;
-                ]]>
-            </summary>
-        <content type="html">
-            <![CDATA[
-                <p>Queries</p>
-<p>GraphQL is a powerful query language that allows developers to request exactly the data they need from an API. However, as applications grow in complexity, queries can become repetitive and difficult to maintain. This is where <strong>GraphQL Fragments</strong> come into play. Fragments allow you to define reusable pieces of query logic, making your codebase cleaner, more modular, and easier to manage.</p>
-<p>In this blog post, we’ll explore what GraphQL fragments are, why they’re useful, and how to use them effectively in your projects.</p>
-<p>---</p>
-<h2>What Are GraphQL Fragments?</h2>
-<p>A <strong>GraphQL fragment</strong> is a reusable piece of query logic that defines a set of fields to be queried. Instead of duplicating the same fields across multiple queries, you can define a fragment once and reuse it wherever needed. Fragments help reduce redundancy, improve readability, and make your queries more maintainable.</p>
-<p>Here’s a simple example of a GraphQL fragment:</p>
-<pre><code>graphql
-fragment UserFields on User {
-  id
-  name
-  email
-}</code></pre>
-<p>In this example:</p>
-<ul>
-<li>The fragment is named <code>UserFields</code>.</li>
-</ul>
-<ul>
-<li>It applies to objects of type <code>User</code> (specified by <code>on User</code>).</li>
-</ul>
-<ul>
-<li>It includes three fields: <code>id</code>, <code>name</code>, and <code>email</code>.</li>
-</ul>
-<p>You can then include this fragment in any query that needs these fields:</p>
-<pre><code>graphql
-query GetUserDetails {
-  user(id: "123") {
-    ...UserFields
-  }
-}</code></pre>
-<p>The <code>...UserFields</code> syntax tells GraphQL to include the fields defined in the <code>UserFields</code> fragment.</p>
-<p>---</p>
-<h2>Why Use GraphQL Fragments?</h2>
-<h3>1. <strong>Code Reusability</strong></h3>
-<p>One of the biggest advantages of fragments is reusability. If multiple queries require the same set of fields, you can define those fields once in a fragment and reuse them across queries. This eliminates duplication and ensures consistency.</p>
-<p>For example, imagine you have two queries—one for fetching a user’s profile and another for listing users in a team. Both queries need the same basic user information (<code>id</code>, <code>name</code>, <code>email</code>). Without fragments, you’d have to repeat these fields in both queries. With fragments, you define them once and reuse them:</p>
-<pre><code>graphql
-query GetProfile {
-  profile {
-    ...UserFields
-  }
-}</code></pre>
-<p>query GetTeamMembers {</p>
-<pre><code>
-  team(id: "456") {
-    members {
-      ...UserFields
+;</code></pre>
+<h3>Step 4: Fetch Data in a Svelte Component</h3>
+<p>Now, let’s use the <code>fetchData</code> function to retrieve and display the list of books in a Svelte component. Create a file named <code>BookList.svelte</code> in the <code>src</code> directory:</p>
+<pre><code>svelte
+<script>
+  import { onMount } from 'svelte';
+  import { fetchData } from './graphqlClient';
+  import { GET_BOOKS } from './queries';<p>  let books = [];</p>
+  let loading = true;<p>  onMount(async () => {</p>
+    try {
+      const data = await fetchData(GET_BOOKS);
+      books = data.books;
+    } catch (error) {
+      console.error('Failed to fetch books:', error);
+    } finally {
+      loading = false;
     }
-  }
+  });
+</script>
+</code></pre>
+<p>{#if loading}</p>
+<pre><code></code></pre>
+<p>Loading...</p>
+<pre><code>{:else}</code></pre>
+<ul>{#each books as book}
+<li><strong>{book.title}</strong> by {book.author}</li>
+{/each}</ul>
+<pre><code>{/if}</code></pre>
+<h3>Step 5: Use the Component</h3>
+<p>Finally, include the <code>BookList</code> component in your main <code>App.svelte</code> file:</p>
+<pre><code>svelte
+<script>
+  import BookList from './BookList.svelte';
+</script>
+</code></pre>
+<main>
+<h1>My Book Collection</h1>
+</main>
+<pre><code></code></pre>
+<p>---</p>
+<h2>Benefits of This Approach</h2>
+<ol>
+<li><strong>Minimal Dependencies</strong>: By using <code>graphql-request</code>, we avoid the overhead of larger GraphQL clients like Apollo or Urql.</li>
+</ol>
+<ol>
+<li><strong>Separation of Concerns</strong>: The GraphQL client and queries are modularized, making the codebase easier to maintain.</li>
+</ol>
+<ol>
+<li><strong>Svelte’s Reactivity</strong>: Svelte’s reactivity ensures that the UI updates automatically when the data changes.</li>
+</ol>
+<p>---</p>
+<h2>Optimizing Further</h2>
+<p>While this setup is lightweight and functional, there are additional optimizations you can consider:</p>
+<ol>
+<li><strong>Caching</strong>: Implement a simple caching mechanism to avoid redundant network requests.</li>
+</ol>
+<ol>
+<li><strong>Error Handling</strong>: Enhance error handling to provide better feedback to users.</li>
+</ol>
+<ol>
+<li><strong>Loading States</strong>: Add more sophisticated loading states or placeholders for a smoother user experience.</li>
+</ol>
+<ol>
+<li><strong>Mutations</strong>: Extend the <code>fetchData</code> function to handle GraphQL mutations for creating, updating, or deleting data.</li>
+</ol>
+<p>---</p>
+<h2>Conclusion</h2>
+<p>Integrating GraphQL into a Svelte application doesn’t have to be complex. By leveraging <code>graphql-request</code> and Svelte’s reactive nature, you can build lightweight, efficient, and maintainable applications. This approach strikes a balance between simplicity and functionality, making it ideal for small to medium-sized projects.</p>
+<p>Whether you’re building a personal blog, a dashboard, or a full-fledged web app, combining GraphQL with Svelte empowers you to deliver a seamless user experience with minimal overhead. Happy coding!</p>
+<p>---</p>
+<p>Feel free to share your thoughts or ask questions in the comments below. Have you tried integrating GraphQL with Svelte? What challenges did you face, and how did you overcome them? Let’s discuss!</p>
+<p> </p>
+<p><a href="https://aymengn.github.io/graphql/using-swr-with-graphql-for-data-fetching.html">Using SWR with GraphQL for Data Fetching</a></p>
+            ]]>
+        </content>
+    </entry>
+    <entry>
+        <title>Using SWR with GraphQL for Data Fetching</title>
+        <author>
+            <name>aymen gn</name>
+        </author>
+        <link href="https://aymengn.github.io/graphql/using-swr-with-graphql-for-data-fetching.html"/>
+        <id>https://aymengn.github.io/graphql/using-swr-with-graphql-for-data-fetching.html</id>
+
+        <updated>2025-03-26T18:21:03+01:00</updated>
+            <summary>
+                <![CDATA[
+                    In modern web development, fetching and managing data efficiently is key to building responsive and performant applications. Two popular tools that have gained significant traction in this space are SWR (a React Hooks library for data fetching) and GraphQL (a query language for APIs). When&hellip;
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                <p>In modern web development, fetching and managing data efficiently is key to building responsive and performant applications. Two popular tools that have gained significant traction in this space are <strong>SWR</strong> (a React Hooks library for data fetching) and <strong>GraphQL</strong> (a query language for APIs). When combined, they offer a powerful solution for handling data fetching in React applications. In this blog post, we’ll explore how to use SWR with GraphQL to simplify data fetching, reduce boilerplate code, and improve the user experience.</p>
+<p>---</p>
+<h2>What is SWR?</h2>
+<p>SWR, created by Vercel, stands for <strong>Stale-While-Revalidate</strong>, a caching strategy that ensures your application always displays up-to-date data while minimizing latency. It’s a lightweight library that provides React Hooks like <code>useSWR</code> to fetch, cache, and update data seamlessly.</p>
+<p>Key features of SWR include:</p>
+<ul>
+<li><strong>Automatic revalidation</strong>: Data is refreshed periodically or when the user refocuses the window.</li>
+</ul>
+<ul>
+<li><strong>Optimistic UI updates</strong>: SWR allows you to display cached data immediately while fetching fresh data in the background.</li>
+</ul>
+<ul>
+<li><strong>Built-in error handling</strong>: Gracefully handle errors and retry failed requests.</li>
+</ul>
+<ul>
+<li><strong>Deduplication</strong>: Avoid redundant network requests by deduplicating identical queries.</li>
+</ul>
+<p>---</p>
+<h2>Why Use GraphQL?</h2>
+<p>GraphQL is a query language for APIs that allows clients to request exactly the data they need. Unlike REST APIs, which often return fixed data structures, GraphQL gives developers fine-grained control over the shape and size of the response. This flexibility makes it an excellent choice for modern applications.</p>
+<p>Advantages of GraphQL include:</p>
+<ul>
+<li><strong>Efficient data fetching</strong>: Fetch only the fields you need, reducing over-fetching and under-fetching.</li>
+</ul>
+<ul>
+<li><strong>Strongly-typed schema</strong>: Ensures type safety and makes it easier to understand the API structure.</li>
+</ul>
+<ul>
+<li><strong>Single endpoint</strong>: All queries and mutations are sent to a single endpoint, simplifying API management.</li>
+</ul>
+<p>---</p>
+<h2>Combining SWR with GraphQL</h2>
+<p>Using SWR with GraphQL combines the best of both worlds: the efficiency and flexibility of GraphQL with the simplicity and performance optimizations of SWR. Let’s walk through how to integrate these two technologies step by step.</p>
+<h3>1. Setting Up Your GraphQL Client</h3>
+<p>To interact with a GraphQL API, you’ll need a client like <strong>Apollo Client</strong> or <strong>graphql-request</strong>. For simplicity, we’ll use <code>graphql-request</code>, a minimal GraphQL client that works well with SWR.</p>
+<p>First, install the necessary dependencies:</p>
+<pre><code>bash
+npm install graphql-request swr</code></pre>
+<p>Next, create a utility function to send GraphQL queries using <code>graphql-request</code>. This function will act as a bridge between SWR and your GraphQL API.</p>
+<pre><code>javascript
+// utils/graphqlClient.js
+import { GraphQLClient } from 'graphql-request';</code></pre>
+<p>const client = new GraphQLClient('https://your-graphql-endpoint.com/graphql', {</p>
+<pre><code>
+  headers: {
+    Authorization: 'Bearer YOUR<em>AUTH</em>TOKEN', // Add authentication if needed
+  },
+});</code></pre>
+<p><code>export default client;</code></p>
+<p> </p>
+<h3>2. Writing a Custom SWR Hook for GraphQL</h3>
+<p>Now, let’s create a custom hook that uses SWR to fetch data from your GraphQL API. This hook will take a GraphQL query and variables as inputs and return the fetched data.</p>
+<pre><code>javascript
+// hooks/useGraphQL.js
+import { useState } from 'react';
+import useSWR from 'swr';
+import graphqlClient from '../utils/graphqlClient';</code></pre>
+<p>const fetcher = async (query, variables) =&gt; {</p>
+<pre><code>
+  const { data } = await graphqlClient.request(query, variables);
+  return data;
+};</code></pre>
+<p>export default function useGraphQL(query, variables = {}) {</p>
+<pre><code>
+  const { data, error, mutate } = useSWR([query, variables], ([q, v]) =&gt; fetcher(q, v));</code></pre>
+<p>return {</p>
+<pre><code>
+    data,
+    isLoading: !error &amp;&amp; !data,
+    isError: error,
+    mutate, // Allows manual revalidation
+  };
 }</code></pre>
-<h3>2. <strong>Improved Readability</strong></h3>
-<p>Fragments make your queries more concise and readable. Instead of cluttering your queries with long lists of fields, you can focus on the structure of the query while delegating field definitions to fragments.</p>
-<p>For example, compare these two approaches:</p>
-<p>Without fragments:</p>
-<pre><code>graphql
-query GetPostDetails {
-  post(id: "789") {
-    id
-    title
-    content
-    author {
+<h3>3. Using the Custom Hook in Your Components</h3>
+<p>With the custom hook in place, you can now use it in your React components to fetch data from your GraphQL API.</p>
+<p>Here’s an example of fetching a list of users:</p>
+<pre><code>javascript
+// components/UserList.js
+import React from 'react';
+import useGraphQL from '../hooks/useGraphQL';</code></pre>
+<p>const GET<em>USERS</em>QUERY = <code></code></p>
+<pre><code>
+  query GetUsers {
+    users {
       id
       name
       email
     }
   }
-}</code></pre>
-<p>With fragments:</p>
-<pre><code>graphql
-fragment PostFields on Post {
-  id
-  title
-  content
-}</code></pre>
-<p>query GetPostDetails {</p>
+;</code></pre>
+<p>function UserList() {</p>
+<pre><code>const { data, isLoading, isError } = useGraphQL(GET<em>USERS</em>QUERY);</code></pre>
+<p>if (isLoading) return</p>
+<pre><code></code></pre>
+<p>Loading...</p>
+<pre><code>;</code></pre>
+<p> </p>
+<pre><code>if (isError) return</code></pre>
+<p>Error fetching users</p>
+<pre><code>;</code></pre>
+<p>return (</p>
+<pre><code></code></pre>
+<ul>{data.users.map(user =&gt; (
+<li>{user.name} - {user.email}</li>
+))}</ul>
+<pre><code>); }</code></pre>
+<p><code>export default UserList;</code></p>
+<p> </p>
+<h3>4. Handling Mutations with SWR</h3>
+<p>While SWR excels at fetching data, it doesn’t natively support mutations (e.g., creating, updating, or deleting data). However, you can still use SWR’s <code>mutate</code> function to manually update the cache after performing a mutation.</p>
+<p>Here’s an example of adding a new user and updating the cache:</p>
+<pre><code>javascript
+// components/AddUserForm.js
+import React, { useState } from 'react';
+import useGraphQL from '../hooks/useGraphQL';</code></pre>
+<p>const ADD<em>USER</em>MUTATION = <code></code></p>
 <pre><code>
-  post(id: "789") {
-    ...PostFields
-    author {
-      ...UserFields
+  mutation AddUser($name: String!, $email: String!) {
+    addUser(name: $name, email: $email) {
+      id
+      name
+      email
     }
   }
-}</code></pre>
-<p>The second version is much easier to read and understand.</p>
-<h3>3. <strong>Collaboration Across Teams</strong></h3>
-<p>In large teams or projects, different developers may work on separate parts of the application. Fragments enable collaboration by allowing developers to define and share common query logic without stepping on each other’s toes. For instance, a frontend developer can define fragments for the data they need, while backend developers ensure the schema supports those fragments.</p>
+;</code></pre>
+<p>function AddUserForm() {</p>
+<pre><code>const [name, setName] = useState(''); const [email, setEmail] = useState(''); const { mutate } = useGraphQL(query GetUsers { users { id name email } });</code></pre>
+<p>const handleSubmit = async (e) =&gt; {</p>
+<pre><code>e.preventDefault();</code></pre>
+<p>const variables = { name, email };</p>
+<pre><code>const { addUser } = await graphqlClient.request(ADD<em>USER</em>MUTATION, variables);</code></pre>
+<p>// Update the cache with the new user</p>
+<pre><code>mutate((currentData) =&gt; ({ ...currentData, users: [...currentData.users, addUser], }), false); // false disables revalidation</code></pre>
+<p>setName('');</p>
+<pre><code>setEmail(''); };</code></pre>
+<p>return (</p>
+<pre><code></code></pre>
+<form><input type="text" value="{name}" placeholder="Name"> setName(e.target.value)} /&gt; <input type="email" value="{email}" placeholder="Email"> setEmail(e.target.value)} /&gt; <button type="submit">Add User</button></form>
+<pre><code>); }</code></pre>
+<p><code>export default AddUserForm;</code></p>
+<p> </p>
 <p>---</p>
-<h2>How to Use GraphQL Fragments</h2>
-<p>Let’s walk through some practical examples of using fragments in real-world scenarios.</p>
-<h3>Example 1: Basic Fragment Usage</h3>
-<p>Suppose you have a <code>Book</code> type with fields like <code>id</code>, <code>title</code>, <code>author</code>, and <code>publishedDate</code>. You can create a fragment to encapsulate these fields:</p>
-<pre><code>graphql
-fragment BookFields on Book {
-  id
-  title
-  author
-  publishedDate
-}</code></pre>
-<p>Now, you can use this fragment in multiple queries:</p>
-<pre><code>graphql
-query GetBooks {
-  books {
-    ...BookFields
-  }
-}</code></pre>
-<p>query GetBookDetails($id: ID!) {</p>
-<pre><code>
-  book(id: $id) {
-    ...BookFields
-  }
-}</code></pre>
-<h3>Example 2: Nested Fragments</h3>
-<p>Fragments can also be nested within other fragments. This is particularly useful when dealing with complex object relationships.</p>
-<p>For example, consider a <code>Post</code> type that has an <code>author</code> field referencing a <code>User</code> type:</p>
-<pre><code>graphql
-fragment UserFields on User {
-  id
-  name
-  email
-}</code></pre>
-<p>fragment PostFields on Post {</p>
-<pre><code>
-  id
-  title
-  content
-  author {
-    ...UserFields
-  }
-}</code></pre>
-<p>You can now use the <code>PostFields</code> fragment in your queries:</p>
+<h2>Benefits of Using SWR with GraphQL</h2>
+<ol>
+<li><strong>Simplified Data Fetching</strong>: SWR abstracts away the complexity of managing loading states, errors, and caching, allowing you to focus on building your application.</li>
+</ol>
+<ol>
+<li><strong>Real-Time Updates</strong>: With automatic revalidation, your UI stays up-to-date without requiring manual refreshes.</li>
+</ol>
+<ol>
+<li><strong>Optimized Performance</strong>: By leveraging caching and deduplication, SWR minimizes unnecessary network requests, improving performance.</li>
+</ol>
+<ol>
+<li><strong>Flexibility</strong>: GraphQL’s ability to fetch exactly what you need complements SWR’s efficient data management.</li>
+</ol>
+<p>---</p>
+<h2>Conclusion</h2>
+<p>Integrating SWR with GraphQL provides a robust and developer-friendly solution for data fetching in React applications. By combining SWR’s caching and revalidation capabilities with GraphQL’s flexibility, you can build fast, responsive, and maintainable apps with minimal effort.</p>
+<p>Whether you’re building a small project or a large-scale application, this combination is worth considering. Give it a try, and experience the power of modern data fetching!</p>
+<p>---</p>
+<p>Let me know if you’d like to dive deeper into any specific aspect of this integration!</p>
+<p><a href="https://aymengn.github.io/graphql/graphql-in-svelte-a-lightweight-approach.html">GraphQL in Svelte: A Lightweight Approach</a></p>
+            ]]>
+        </content>
+    </entry>
+    <entry>
+        <title>GraphQL with Next.js: Server-Side Rendering and APIs</title>
+        <author>
+            <name>aymen gn</name>
+        </author>
+        <link href="https://aymengn.github.io/graphql/graphql-with-nextjs-server-side-rendering-and-apis.html"/>
+        <id>https://aymengn.github.io/graphql/graphql-with-nextjs-server-side-rendering-and-apis.html</id>
+
+        <updated>2025-03-26T18:13:59+01:00</updated>
+            <summary>
+                <![CDATA[
+                    In the modern web development landscape, creating fast, scalable, and efficient applications is a top priority. Two technologies that have gained significant traction in recent years are GraphQL and Next.js. GraphQL is a query language for APIs that provides a more flexible and efficient way&hellip;
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                <p>In the modern web development landscape, creating fast, scalable, and efficient applications is a top priority. Two technologies that have gained significant traction in recent years are <strong>GraphQL</strong> and <strong>Next.js</strong>. GraphQL is a query language for APIs that provides a more flexible and efficient way to fetch data, while Next.js is a React framework that simplifies server-side rendering (SSR), static site generation (SSG), and client-side routing.</p>
+<p>When combined, GraphQL and Next.js offer a powerful stack for building high-performance applications. In this blog post, we’ll explore how to integrate GraphQL with Next.js, focusing on server-side rendering and API integration.</p>
+<p>---</p>
+<h2>Why Use GraphQL with Next.js?</h2>
+<p>Before diving into the technical details, let’s briefly discuss why GraphQL and Next.js are a great match:</p>
+<ol>
+<li><strong>Efficient Data Fetching</strong>: GraphQL allows you to request only the data you need, reducing over-fetching and under-fetching issues common with REST APIs.</li>
+</ol>
+<ol>
+<li><strong>Server-Side Rendering (SSR)</strong>: Next.js supports SSR out of the box, enabling faster page loads and better SEO. GraphQL complements this by fetching data efficiently on the server side.</li>
+</ol>
+<ol>
+<li><strong>Scalability</strong>: Both technologies are designed to scale, making them ideal for large-scale applications.</li>
+</ol>
+<ol>
+<li><strong>Developer Experience</strong>: The combination of GraphQL’s flexibility and Next.js’s simplicity makes development faster and more enjoyable.</li>
+</ol>
+<p>---</p>
+<h2>Setting Up a Next.js Project with GraphQL</h2>
+<p>To get started, you’ll need to set up a basic Next.js project and integrate it with GraphQL. Here’s a step-by-step guide:</p>
+<h3>Step 1: Create a Next.js Project</h3>
+<p>If you don’t already have a Next.js project, you can create one using the following commands:</p>
+<pre><code>bash
+npx create-next-app@latest my-nextjs-graphql-app
+cd my-nextjs-graphql-app</code></pre>
+<p>This will scaffold a new Next.js project.</p>
+<h3>Step 2: Install Required Dependencies</h3>
+<p>You’ll need a GraphQL client to interact with your GraphQL API. Popular choices include <strong>Apollo Client</strong> and <strong>GraphQL Request</strong>. For simplicity, we’ll use <code>graphql-request</code> in this example.</p>
+<p>Install the necessary dependencies:</p>
+<pre><code>bash
+npm install graphql-request graphql</code></pre>
+<h3>Step 3: Define Your GraphQL Query</h3>
+<p>Create a folder named <code>queries</code> in your project and add a file called <code>fetchData.graphql</code>. This file will contain your GraphQL query:</p>
 <pre><code>graphql
 query GetPosts {
   posts {
-    ...PostFields
+    id
+    title
+    content
   }
 }</code></pre>
-<h3>Example 3: Inline Fragments</h3>
-<p>In addition to named fragments, GraphQL supports <strong>inline fragments</strong>, which are useful when querying interfaces or unions. For example, if you have a <code>SearchResult</code> interface with possible types like <code>Book</code>, <code>Author</code>, and <code>Publisher</code>, you can use inline fragments to specify fields for each type:</p>
-<pre><code>graphql
-query Search($query: String!) {
-  search(query: $query) {
-    typename
-    ... on Book {
-      id
-      title
-      author
-    }
-    ... on Author {
-      id
-      name
-    }
-    ... on Publisher {
-      id
-      companyName
-    }
-  }
-}</code></pre>
-<p>This approach ensures you only fetch the relevant fields for each type.</p>
+<p>This query fetches a list of posts from your GraphQL API.</p>
 <p>---</p>
-<h2>Best Practices for Using Fragments</h2>
+<h2>Server-Side Rendering with GraphQL</h2>
+<p>Next.js excels at server-side rendering, and integrating GraphQL into this process is straightforward. Let’s see how to fetch data using GraphQL during SSR.</p>
+<h3>Step 1: Configure the GraphQL Client</h3>
+<p>Create a utility file to configure the GraphQL client. For example, create a file named <code>graphqlClient.js</code>:</p>
+<pre><code>javascript
+import { GraphQLClient } from 'graphql-request';</code></pre>
+<p>const endpoint = 'https://your-graphql-api.com/graphql'; // Replace with your GraphQL API endpoint</p>
+<pre><code></code></pre>
+<p><code>export const graphQLClient = new GraphQLClient(endpoint);</code></p>
+<p> </p>
+<h3>Step 2: Fetch Data in <code>getServerSideProps</code></h3>
+<p>Next.js provides the <code>getServerSideProps</code> function for server-side rendering. You can use this function to fetch data from your GraphQL API before rendering the page.</p>
+<p>Here’s an example of how to implement it:</p>
+<pre><code>javascript
+import { graphQLClient } from '../lib/graphqlClient';
+import { GetPostsDocument } from '../queries/fetchData.graphql'; // Import your GraphQL query</code></pre>
+<p>export async function getServerSideProps() {</p>
+<pre><code>
+  try {
+    const data = await graphQLClient.request(GetPostsDocument);</code></pre>
+<p>return {</p>
+<pre><code>
+      props: {
+        posts: data.posts,
+      },
+    };
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    return {
+      props: {
+        posts: [],
+      },
+    };
+  }
+}</code></pre>
+<p>export default function Home({ posts }) {</p>
+<pre><code>
+  return (</code></pre>
+<div>
+<h1>Blog Posts</h1>
+<ul>{posts.map((post) =&gt; (
+<li>
+<h2>{post.title}</h2>
+<p>{post.content}</p>
+</li>
+))}</ul>
+</div>
+<pre><code>
+  );
+}</code></pre>
+<p>In this example:</p>
+<ul>
+<li>The <code>getServerSideProps</code> function fetches data from the GraphQL API using the <code>graphQLClient</code>.</li>
+</ul>
+<ul>
+<li>The fetched data is passed as props to the <code>Home</code> component, which renders the list of posts.</li>
+</ul>
+<p>---</p>
+<h2>Using GraphQL with API Routes in Next.js</h2>
+<p>Next.js also allows you to create custom API routes, which can be used to proxy requests to your GraphQL API or handle other backend logic.</p>
+<h3>Step 1: Create an API Route</h3>
+<p>Create a file named <code>pages/api/graphql.js</code>:</p>
+<pre><code>javascript
+import { graphQLClient } from '../../lib/graphqlClient';</code></pre>
+<p>export default async function handler(req, res) {</p>
+<pre><code>
+  const { query } = req.body;</code></pre>
+<p>try {</p>
+<pre><code>
+    const data = await graphQLClient.request(query);
+    res.status(200).json(data);
+  } catch (error) {
+    console.error('Error executing GraphQL query:', error);
+    res.status(500).json({ error: 'Failed to fetch data' });
+  }
+}</code></pre>
+<p>This route accepts a GraphQL query in the request body, executes it using the <code>graphQLClient</code>, and returns the result.</p>
+<h3>Step 2: Call the API Route from the Client</h3>
+<p>You can call this API route from your frontend code using <code>fetch</code> or any HTTP client library:</p>
+<pre><code>javascript
+const fetchData = async () =&gt; {
+  const response = await fetch('/api/graphql', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      query: 
+        query GetPosts {
+          posts {
+            id
+            title
+            content
+          }
+        }
+      , }), });</code></pre>
+<p>const data = await response.json();</p>
+<pre><code>console.log(data); };</code></pre>
+<p>This approach is useful if you want to centralize your GraphQL logic or add middleware (e.g., authentication) to your API requests.</p>
+<p>---</p>
+<h2>Benefits of This Approach</h2>
 <ol>
-<li><strong>Keep Fragments Focused</strong>: Define fragments for specific purposes. Avoid creating overly broad fragments that include unnecessary fields.</li>
+<li><strong>Improved Performance</strong>: By fetching data on the server side, you reduce the amount of JavaScript sent to the client, leading to faster page loads.</li>
 </ol>
 <ol>
-<li><strong>Name Your Fragments Clearly</strong>: Use descriptive names for your fragments to make their purpose obvious. For example, <code>UserProfileFields</code> is more meaningful than <code>UserData</code>.</li>
+<li><strong>SEO Optimization</strong>: Server-rendered pages are fully indexed by search engines, improving your site’s visibility.</li>
 </ol>
 <ol>
-<li><strong>Avoid Overusing Fragments</strong>: While fragments are powerful, overusing them can lead to confusion. Use them only when they provide clear benefits in terms of reusability or readability.</li>
+<li><strong>Centralized Data Management</strong>: Using API routes, you can manage all GraphQL interactions in one place, making your codebase cleaner and easier to maintain.</li>
 </ol>
 <ol>
-<li><strong>Leverage Tools for Validation</strong>: Use tools like GraphQL Code Generator or Apollo Client to validate and generate TypeScript types based on your fragments. This ensures type safety and reduces runtime errors.</li>
+<li><strong>Flexibility</strong>: You can switch between SSR, SSG, and client-side fetching based on your application’s needs.</li>
 </ol>
 <p>---</p>
 <h2>Conclusion</h2>
-<p>GraphQL fragments are a game-changer for writing clean, efficient, and maintainable queries. By encapsulating reusable query logic, fragments help reduce duplication, improve readability, and foster collaboration across teams. Whether you’re working on a small project or a large-scale application, mastering fragments will make your GraphQL development experience smoother and more enjoyable.</p>
-<p>So, next time you find yourself copying and pasting the same fields across queries, take a step back and consider using a fragment instead. Your future self—and your teammates—will thank you!</p>
+<p>Combining GraphQL with Next.js offers a robust solution for building modern web applications. By leveraging Next.js’s server-side rendering capabilities and GraphQL’s efficient data-fetching model, you can create fast, scalable, and SEO-friendly applications.</p>
+<p>Whether you’re building a blog, e-commerce platform, or dashboard, this stack provides the tools you need to succeed. Start experimenting with GraphQL and Next.js today, and unlock the full potential of your web projects!</p>
 <p>---</p>
-<p>What are your thoughts on GraphQL fragments</p>
-<p>Understanding GraphQL Scalars <a href="https://aymengn.github.io/graphql/understanding-graphql-scalars-and-enums.html">and</a> Enums?</p>
-<p><a href="https://aymengn.github.io/graphql/graphql-directives-skip-and-include.html">GraphQL Directives: @skip and @include Have you used them in your projects? Share your experiences in the comments below!</a></p>
-<p><a href="https://aymengn.github.io/graphql/building-a-graphql-api-with-nodejs-and-express.html">Building a GraphQL API with Node.js and Express</a></p>
-<p><a href="https://aymengn.github.io/graphql/using-graphql-with-mongodb-and-mongoose.html">Using GraphQL with MongoDB and Mongoose</a></p>
+<p>What are your thoughts on using GraphQL with Next.js? Have you tried this combination in your projects? Share your experiences in the comments below!</p>
+<p><a href="https://aymengn.github.io/graphql/graphql-in-svelte-a-lightweight-approach.html">GraphQL in Svelte: A Lightweight Approach</a></p>
+<p><a href="https://aymengn.github.io/graphql/using-swr-with-graphql-for-data-fetching.html">Using SWR with GraphQL for Data Fetching</a></p>
             ]]>
         </content>
     </entry>
     <entry>
-        <title>GraphQL Subscriptions for Real-Time Data</title>
+        <title>Vue.js and GraphQL: Building a Modern Web App</title>
         <author>
             <name>aymen gn</name>
         </author>
-        <link href="https://aymengn.github.io/graphql/graphql-subscriptions-for-real-time-data.html"/>
-        <id>https://aymengn.github.io/graphql/graphql-subscriptions-for-real-time-data.html</id>
+        <link href="https://aymengn.github.io/graphql/vuejs-and-graphql-building-a-modern-web-app.html"/>
+        <id>https://aymengn.github.io/graphql/vuejs-and-graphql-building-a-modern-web-app.html</id>
 
-        <updated>2025-03-26T16:09:08+01:00</updated>
+        <updated>2025-03-26T18:09:57+01:00</updated>
             <summary>
                 <![CDATA[
-                    In today’s fast-paced digital world, real-time data is becoming a cornerstone of modern applications. Whether it’s live chat apps, stock tickers, collaborative tools like Google Docs, or even social media feeds, users expect instant updates without needing to refresh their browsers. GraphQL, with its flexible&hellip;
+                    The landscape of web development is constantly evolving, with new tools and frameworks emerging to help developers create faster, more efficient, and scalable applications. Two technologies that have gained significant traction in recent years are Vue.js and GraphQL. When combined, they offer a powerful stack&hellip;
                 ]]>
             </summary>
         <content type="html">
             <![CDATA[
-                <p>In today’s fast-paced digital world, real-time data is becoming a cornerstone of modern applications. Whether it’s live chat apps, stock tickers, collaborative tools like Google Docs, or even social media feeds, users expect instant updates without needing to refresh their browsers. GraphQL, with its flexible query language and powerful features, has emerged as a go-to solution for building APIs. One of its standout features is <strong>GraphQL Subscriptions</strong>, which enables real-time data streaming.</p>
-<p>In this blog post, we’ll explore what GraphQL Subscriptions are, how they work, and why they’re a game-changer for real-time data in your applications.</p>
+                <p>The landscape of web development is constantly evolving, with new tools and frameworks emerging to help developers create faster, more efficient, and scalable applications. Two technologies that have gained significant traction in recent years are <strong>Vue.js</strong> and <strong>GraphQL</strong>. When combined, they offer a powerful stack for building modern, responsive, and data-driven web applications.</p>
+<p>In this blog post, we'll explore how to leverage <strong>Vue.js</strong>—a progressive JavaScript framework—and <strong>GraphQL</strong>—a query language for APIs—to build a cutting-edge web app. We'll cover the benefits of using these technologies together, their core concepts, and walk through a basic implementation example.</p>
 <p>---</p>
-<h2>What Are GraphQL Subscriptions?</h2>
-<p>GraphQL Subscriptions are a mechanism for enabling real-time, event-driven communication between the server and the client. Unlike traditional GraphQL queries (which fetch data on demand) or mutations (which modify data), subscriptions allow the server to push updates to the client whenever a specific event occurs.</p>
-<p>For example:</p>
+<h2>Why Choose Vue.js and GraphQL?</h2>
+<h3>1. <strong>Vue.js: Simplicity Meets Flexibility</strong></h3>
+<p>Vue.js is known for its simplicity and ease of integration. It allows developers to build user interfaces incrementally, making it an excellent choice for both small projects and large-scale applications. Key features include:</p>
 <ul>
-<li>In a chat application, a subscription can notify clients when a new message is sent.</li>
+<li><strong>Component-based architecture</strong>: Build reusable UI components.</li>
 </ul>
 <ul>
-<li>In a stock trading platform, a subscription can push live price updates to users.</li>
+<li><strong>Reactive data binding</strong>: Automatically update the DOM when data changes.</li>
 </ul>
 <ul>
-<li>In a collaborative document editor, a subscription can broadcast changes made by one user to all other collaborators.</li>
+<li><strong>Rich ecosystem</strong>: Tools like Vue Router and Vuex simplify routing and state management.</li>
 </ul>
-<p>Subscriptions establish a persistent connection between the client and the server, typically using <strong>WebSockets</strong>. This ensures that the server can send updates to the client as soon as they occur, without requiring the client to repeatedly poll the server for new data.</p>
+<h3>2. <strong>GraphQL: Efficient Data Fetching</strong></h3>
+<p>GraphQL revolutionizes how clients interact with APIs by allowing them to request exactly the data they need. Unlike REST APIs, which often return excessive or insufficient data, GraphQL provides precise control over queries. Benefits include:</p>
+<ul>
+<li><strong>Single endpoint</strong>: Fetch all required data in one request.</li>
+</ul>
+<ul>
+<li><strong>Strongly-typed schema</strong>: Ensures type safety and self-documentation.</li>
+</ul>
+<ul>
+<li><strong>Reduced over-fetching and under-fetching</strong>: Optimize performance by requesting only necessary fields.</li>
+</ul>
+<p>When combined, Vue.js and GraphQL enable developers to create apps that are both performant and maintainable.</p>
 <p>---</p>
-<h2>How Do GraphQL Subscriptions Work?</h2>
-<p>To understand how GraphQL Subscriptions work, let’s break down the process into three key components:</p>
-<h3>1. <strong>Client-Side Subscription</strong></h3>
-<p>The client sends a subscription request to the server, specifying the type of events it wants to listen for and the data it needs. For example, a subscription might look like this:</p>
-<pre><code>graphql
-subscription {
-  newMessage {
-    id
-    content
-    sender
-    timestamp
-  }
-}</code></pre>
-<p>This subscription tells the server that the client wants to be notified whenever a new message is created, and it specifies the fields (<code>id</code>, <code>content</code>, <code>sender</code>, <code>timestamp</code>) it wants to receive.</p>
-<h3>2. <strong>Server-Side Event Handling</strong></h3>
-<p>On the server side, the GraphQL schema defines the subscription type and the logic for handling events. For instance:</p>
-<pre><code>graphql
-type Subscription {
-  newMessage: Message
-}</code></pre>
-<p>type Message {</p>
-<pre><code>
-  id: ID!
-  content: String!
-  sender: String!
-  timestamp: String!
-}</code></pre>
-<p>The server listens for specific events (e.g., a new message being added to the database) and triggers the subscription whenever the event occurs. This is often implemented using a pub/sub (publish-subscribe) system, where events are published to a topic, and subscribers receive notifications.</p>
-<h3>3. <strong>Real-Time Data Streaming</strong></h3>
-<p>Once the subscription is established, the server pushes updates to the client over a persistent WebSocket connection. The client receives these updates in real time and can update its UI accordingly.</p>
+<h2>Core Concepts of Vue.js and GraphQL</h2>
+<p>Before diving into implementation, let's review the key concepts of each technology:</p>
+<h3>Vue.js Basics</h3>
+<ul>
+<li><strong>Components</strong>: Self-contained UI elements with their own template, logic, and styles.</li>
+</ul>
+<ul>
+<li><strong>Directives</strong>: Special attributes (e.g., <code>v-bind</code>, <code>v-for</code>) that add dynamic behavior to templates.</li>
+</ul>
+<ul>
+<li><strong>State Management</strong>: Vuex provides centralized state management for complex applications.</li>
+</ul>
+<h3>GraphQL Basics</h3>
+<ul>
+<li><strong>Queries</strong>: Requests for data from the server.</li>
+</ul>
+<ul>
+<li><strong>Mutations</strong>: Operations to modify data on the server.</li>
+</ul>
+<ul>
+<li><strong>Subscriptions</strong>: Real-time updates via WebSocket connections.</li>
+</ul>
+<ul>
+<li><strong>Schema</strong>: Defines the structure of the API, including types and relationships.</li>
+</ul>
 <p>---</p>
-<h2>Why Use GraphQL Subscriptions?</h2>
-<h3>1. <strong>Real-Time Updates Without Polling</strong></h3>
-<p>Traditional REST APIs often rely on polling, where the client repeatedly sends requests to the server to check for updates. This approach is inefficient, as it consumes unnecessary bandwidth and server resources. GraphQL Subscriptions eliminate the need for polling by establishing a persistent connection, ensuring updates are delivered instantly.</p>
-<h3>2. <strong>Granular Data Requests</strong></h3>
-<p>With GraphQL Subscriptions, clients can specify exactly which fields they need, just like with queries and mutations. This reduces over-fetching and under-fetching of data, making your application more efficient.</p>
-<h3>3. <strong>Scalability</strong></h3>
-<p>GraphQL Subscriptions can be paired with pub/sub systems like Redis or Kafka, allowing you to scale your real-time infrastructure horizontally. These systems handle the heavy lifting of managing subscriptions and broadcasting updates to multiple clients.</p>
-<h3>4. <strong>Unified API Design</strong></h3>
-<p>By combining queries, mutations, and subscriptions in a single GraphQL API, you can provide a consistent and intuitive interface for your clients. This simplifies development and maintenance, as all interactions with the backend are handled through the same endpoint.</p>
-<p>---</p>
-<h2>Setting Up GraphQL Subscriptions</h2>
-<p>Let’s walk through a basic example of setting up GraphQL Subscriptions using Apollo Server and WebSocket.</p>
-<h3>1. <strong>Install Dependencies</strong></h3>
-<p>First, install the necessary packages:</p>
+<h2>Building a Vue.js App with GraphQL</h2>
+<p>Now, let's walk through a simple example of integrating Vue.js with GraphQL. We'll create a basic app that fetches and displays a list of users.</p>
+<h3>Step 1: Set Up the Project</h3>
+<p>First, initialize a new Vue.js project using Vue CLI:</p>
 <pre><code>bash
-npm install apollo-server graphql ws graphql-subscriptions</code></pre>
-<h3>2. <strong>Set Up the Pub/Sub System</strong></h3>
-<p>Create a simple pub/sub system using the <code>PubSub</code> class from <code>graphql-subscriptions</code>:</p>
+npm install -g @vue/cli
+vue create vue-graphql-app
+cd vue-graphql-app</code></pre>
+<p>Install necessary dependencies:</p>
+<pre><code>bash
+npm install graphql apollo-client apollo-link-http apollo-cache-inmemory vue-apollo graphql-tag</code></pre>
+<h3>Step 2: Configure Apollo Client</h3>
+<p>Apollo Client is a popular library for integrating GraphQL with frontend frameworks. Create a file called <code>apollo.js</code> in the <code>src</code> directory:</p>
 <pre><code>javascript
-const { PubSub } = require('graphql-subscriptions');
-const pubsub = new PubSub();</code></pre>
-<h3>3. <strong>Define the Schema</strong></h3>
-<p>Define your GraphQL schema with a subscription type:</p>
+import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
+import { ApolloProvider } from '@vue/apollo-composable';</code></pre>
+<p>const httpLink = new HttpLink({</p>
+<pre><code>
+  uri: 'https://your-graphql-endpoint.com/graphql', // Replace with your GraphQL endpoint
+});</code></pre>
+<p>const apolloClient = new ApolloClient({</p>
+<pre><code>
+  link: httpLink,
+  cache: new InMemoryCache(),
+});</code></pre>
+<p><code>export default apolloClient;</code></p>
+<p> </p>
+<p>Then, configure the Apollo provider in <code>main.js</code>:</p>
+<pre><code>javascript
+import { createApp } from 'vue';
+import App from './App.vue';
+import apolloClient from './apollo';
+import { DefaultApolloClient } from '@vue/apollo-composable';</code></pre>
+<p>const app = createApp(App);</p>
+<pre><code></code></pre>
+<p>app.provide(DefaultApolloClient, apolloClient);</p>
+<pre><code>
+app.mount('#app');</code></pre>
+<h3>Step 3: Write a GraphQL Query</h3>
+<p>Create a GraphQL query to fetch users. Use the <code>gql</code> tag from <code>graphql-tag</code>:</p>
+<pre><code>javascript
+import gql from 'graphql-tag';</code></pre>
+<p>export const GET_USERS = gql<code></code></p>
+<pre><code>
+  query GetUsers {
+    users {
+      id
+      name
+      email
+    }
+  }
+;</code></pre>
+<h3>Step 4: Fetch and Display Data in a Vue Component</h3>
+<p>Create a <code>UserList.vue</code> component to display the fetched data:</p>
+<pre><code>vue</code></pre>
+<div>
+<h1>User List</h1>
+<ul>
+<li>{{ user.name }} - {{ user.email }}</li>
+</ul>
+</div>
+<pre><code>
+<script>
+import { useQuery } from '@vue/apollo-composable';
+import { GET_USERS } from '../queries';<p>export default {</p>
+  setup() {
+    const { result, loading, error } = useQuery(GET_USERS);<p>    return {</p>
+      users: result,
+      loading,
+      error,
+    };
+  },
+};
+</script>
+</code></pre>
+<h3>Step 5: Run the App</h3>
+<p>Start the development server:</p>
+<pre><code>bash
+npm run serve</code></pre>
+<p>Visit <code>http://localhost:8080</code> in your browser to see the user list rendered dynamically.</p>
+<p>---</p>
+<h2>Advantages of Using Vue.js and GraphQL Together</h2>
+<ol>
+<li><strong>Efficient Data Handling</strong>: GraphQL minimizes unnecessary data transfer, while Vue's reactivity ensures the UI updates seamlessly.</li>
+</ol>
+<ol>
+<li><strong>Scalability</strong>: Both technologies are modular, making it easy to scale your app as requirements grow.</li>
+</ol>
+<ol>
+<li><strong>Developer Experience</strong>: Vue's intuitive syntax and GraphQL's self-documenting nature enhance productivity.</li>
+</ol>
+<p>---</p>
+<h2>Conclusion</h2>
+<p>Combining Vue.js and GraphQL creates a robust foundation for building modern web applications. Vue.js simplifies frontend development with its declarative syntax and component-based architecture, while GraphQL optimizes data fetching and reduces backend complexity. Together, they empower developers to deliver high-performance, maintainable, and user-friendly apps.</p>
+<p>Whether you're building a small personal project or a large enterprise application, the Vue.js and GraphQL stack is worth exploring. Start experimenting today and unlock the potential of this powerful combination!</p>
+<p>---</p>
+<p>Feel free to share your thoughts, questions, or experiences with Vue.js and GraphQL in the comments below. Happy coding! 🚀</p>
+<p><a href="https://aymengn.github.io/graphql/graphql-with-nextjs-server-side-rendering-and-apis.html">GraphQL with Next.js: Server-Side Rendering and APIs</a></p>
+<p><a href="https://aymengn.github.io/graphql/graphql-in-svelte-a-lightweight-approach.html">GraphQL in Svelte: A Lightweight Approach</a></p>
+<p><a href="https://aymengn.github.io/graphql/using-swr-with-graphql-for-data-fetching.html">Using SWR with GraphQL for Data Fetching</a></p>
+            ]]>
+        </content>
+    </entry>
+    <entry>
+        <title>React and GraphQL: Fetching Data with Apollo Client</title>
+        <author>
+            <name>aymen gn</name>
+        </author>
+        <link href="https://aymengn.github.io/graphql/react-and-graphql-fetching-data-with-apollo-client.html"/>
+        <id>https://aymengn.github.io/graphql/react-and-graphql-fetching-data-with-apollo-client.html</id>
+
+        <updated>2025-03-26T18:03:54+01:00</updated>
+            <summary>
+                <![CDATA[
+                    In the world of modern web development, building performant and scalable applications requires efficient data fetching. React, a popular JavaScript library for building user interfaces, pairs exceptionally well with GraphQL, a query language for APIs. When combined with Apollo Client—a powerful state management library for&hellip;
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                <p>In the world of modern web development, building performant and scalable applications requires efficient data fetching. React, a popular JavaScript library for building user interfaces, pairs exceptionally well with GraphQL, a query language for APIs. When combined with Apollo Client—a powerful state management library for GraphQL—they form a robust stack for managing data in React applications.</p>
+<p>In this blog post, we’ll explore how to use <strong>React</strong> and <strong>GraphQL</strong> together with <strong>Apollo Client</strong> to fetch and manage data efficiently. By the end of this article, you'll understand:</p>
+<ol>
+<li>What is GraphQL and why it's a game-changer.</li>
+</ol>
+<ol>
+<li>Why Apollo Client is a great choice for integrating GraphQL with React.</li>
+</ol>
+<ol>
+<li>How to set up Apollo Client in a React project.</li>
+</ol>
+<ol>
+<li>Fetching and displaying data with Apollo Client and React components.</li>
+</ol>
+<p>---</p>
+<h2>What is GraphQL?</h2>
+<p>Before diving into Apollo Client, let’s briefly discuss GraphQL. GraphQL is an alternative to REST APIs that allows clients (like React apps) to request exactly the data they need, no more and no less. Unlike REST, where endpoints are predefined and return fixed data structures, GraphQL enables developers to query specific fields and relationships dynamically.</p>
+<h3>Key Benefits of GraphQL:</h3>
+<ul>
+<li><strong>Efficient Data Fetching</strong>: Avoid over-fetching or under-fetching data by requesting only what you need.</li>
+</ul>
+<ul>
+<li><strong>Single Endpoint</strong>: All queries are sent to a single endpoint, reducing complexity compared to multiple REST endpoints.</li>
+</ul>
+<ul>
+<li><strong>Strong Typing</strong>: GraphQL schemas are strongly typed, ensuring predictable data structures and better tooling support.</li>
+</ul>
+<ul>
+<li><strong>Real-Time Updates</strong>: GraphQL supports subscriptions for real-time data updates.</li>
+</ul>
+<p>These features make GraphQL ideal for complex applications where flexibility and performance are critical.</p>
+<p>---</p>
+<h2>Why Use Apollo Client?</h2>
+<p>While GraphQL provides a powerful querying mechanism, managing its integration with React can become cumbersome without proper tools. This is where <strong>Apollo Client</strong> comes in—it simplifies the process of interacting with a GraphQL API by providing:</p>
+<ol>
+<li><strong>Declarative Data Fetching</strong>: Fetch data directly within your React components using hooks like <code>useQuery</code>.</li>
+</ol>
+<ol>
+<li><strong>State Management</strong>: Automatically caches queried data, reducing redundant network requests and improving performance.</li>
+</ol>
+<ol>
+<li><strong>Error Handling</strong>: Built-in mechanisms to handle errors gracefully.</li>
+</ol>
+<ol>
+<li><strong>Real-Time Updates</strong>: Support for GraphQL subscriptions out of the box.</li>
+</ol>
+<ol>
+<li><strong>Developer Tools</strong>: Apollo offers browser extensions and debugging tools to streamline development.</li>
+</ol>
+<p>With Apollo Client, you can focus on building your UI while the library handles the heavy lifting of data fetching and caching.</p>
+<p>---</p>
+<h2>Setting Up Apollo Client in a React Project</h2>
+<p>To get started, you’ll need to set up Apollo Client in your React project. Follow these steps:</p>
+<h3>1. Install Dependencies</h3>
+<p>First, install the required packages:</p>
+<pre><code>bash
+npm install @apollo/client graphql</code></pre>
+<ul>
+<li><code>@apollo/client</code>: The core library for Apollo Client.</li>
+</ul>
+<ul>
+<li><code>graphql</code>: A peer dependency required for parsing GraphQL queries.</li>
+</ul>
+<h3>2. Configure Apollo Client</h3>
+<p>Create an instance of Apollo Client and wrap your React app with the <code>ApolloProvider</code> component. This makes the client available throughout your application.</p>
+<pre><code>javascript
+// src/index.js
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import App from './App';</code></pre>
+<p>// Create an Apollo Client instance</p>
+<pre><code>
+const client = new ApolloClient({
+  uri: 'https://your-graphql-api.com/graphql', // Replace with your GraphQL endpoint
+  cache: new InMemoryCache(),
+});</code></pre>
+<p>ReactDOM.render(</p>
+<pre><code>
+  
+    
+  ,
+  document.getElementById('root')
+);</code></pre>
+<p>Here:</p>
+<ul>
+<li><code>uri</code> specifies the GraphQL server endpoint.</li>
+</ul>
+<ul>
+<li><code>cache</code> initializes an in-memory cache for storing query results.</li>
+</ul>
+<p>Now, your React app is ready to interact with the GraphQL API!</p>
+<p>---</p>
+<h2>Fetching Data with Apollo Client</h2>
+<p>Once Apollo Client is set up, fetching data becomes straightforward. Let’s walk through an example of querying data and displaying it in a React component.</p>
+<h3>Example: Fetching a List of Users</h3>
+<p>Suppose your GraphQL API has a query called <code>users</code> that returns a list of users with their names and emails. Here’s how you can fetch and display this data:</p>
+<h4>Step 1: Write the Query</h4>
+<p>Define your GraphQL query using the <code>gql</code> template literal from Apollo Client.</p>
+<pre><code>javascript
+import { gql } from '@apollo/client';</code></pre>
+<p>const GET_USERS = gql<code></code></p>
+<pre><code>
+  query GetUsers {
+    users {
+      id
+      name
+      email
+    }
+  }
+;</code></pre>
+<h4>Step 2: Use the <code>useQuery</code> Hook</h4>
+<p>The <code>useQuery</code> hook executes the query and provides the result (data, loading state, and errors) to your component.</p>
+<pre><code>javascript
+import React from 'react';
+import { useQuery } from '@apollo/client';
+import { GET_USERS } from './queries';</code></pre>
+<p>function UserList() {</p>
+<pre><code>
+  const { loading, error, data } = useQuery(GET_USERS);</code></pre>
+<p>if (loading) return</p>
+<pre><code></code></pre>
+<p>Loading...</p>
+<pre><code>;</code></pre>
+<p> </p>
+<pre><code>
+  if (error) return</code></pre>
+<p>Error: {error.message}</p>
+<pre><code>;</code></pre>
+<p>return (</p>
+<pre><code></code></pre>
+<ul>{data.users.map((user) =&gt; (
+<li>{user.name} - {user.email}</li>
+))}</ul>
+<pre><code>
+  );
+}</code></pre>
+<p><code>export default UserList;</code></p>
+<p> </p>
+<h4>Explanation:</h4>
+<ul>
+<li><strong>Loading State</strong>: Displays a loading message while the query is in progress.</li>
+</ul>
+<ul>
+<li><strong>Error Handling</strong>: Shows an error message if something goes wrong.</li>
+</ul>
+<ul>
+<li><strong>Data Rendering</strong>: Maps over the <code>users</code> array to render each user’s details.</li>
+</ul>
+<p>---</p>
+<h2>Optimizing Performance with Caching</h2>
+<p>One of Apollo Client’s standout features is its caching mechanism. By default, Apollo Client stores query results in an in-memory cache. This means subsequent requests for the same data won’t hit the server again, significantly improving performance.</p>
+<p>For example, if you navigate away from the <code>UserList</code> component and return later, Apollo Client will serve the cached data instead of refetching it.</p>
+<p>You can also manually update the cache or refetch data when needed using methods like <code>refetch</code> or <code>update</code>.</p>
+<p>---</p>
+<h2>Conclusion</h2>
+<p>Combining React, GraphQL, and Apollo Client creates a seamless experience for building data-driven applications. With GraphQL’s flexible querying capabilities and Apollo Client’s intuitive API, you can fetch, manage, and display data efficiently in your React components.</p>
+<p>By following the steps outlined in this post—setting up Apollo Client, writing queries, and leveraging hooks—you’re now equipped to build dynamic, performant applications. Whether you’re working on a small project or a large-scale enterprise app, this stack will help you deliver exceptional user experiences.</p>
+<p>Happy coding! 🚀</p>
+<p><a href="https://aymengn.github.io/graphql/vuejs-and-graphql-building-a-modern-web-app.html">Vue.js and GraphQL: Building a Modern Web App</a></p>
+<p><a href="https://aymengn.github.io/graphql/graphql-with-nextjs-server-side-rendering-and-apis.html">GraphQL with Next.js: Server-Side Rendering and APIs</a></p>
+<p><a href="https://aymengn.github.io/graphql/graphql-in-svelte-a-lightweight-approach.html">GraphQL in Svelte: A Lightweight Approach</a></p>
+<p><a href="https://aymengn.github.io/graphql/using-swr-with-graphql-for-data-fetching.html">Using SWR with GraphQL for Data Fetching</a></p>
+            ]]>
+        </content>
+    </entry>
+    <entry>
+        <title>GraphQL with Spring Boot? Why Use </title>
+        <author>
+            <name>aymen gn</name>
+        </author>
+        <link href="https://aymengn.github.io/graphql/graphql-with-spring-boot-why-use.html"/>
+        <id>https://aymengn.github.io/graphql/graphql-with-spring-boot-why-use.html</id>
+
+        <updated>2025-03-26T17:59:16+01:00</updated>
+            <summary>
+                <![CDATA[
+                    In the ever-evolving landscape of web development, APIs play a crucial role in enabling communication between frontend and backend systems. Among the various API technologies available, GraphQL has emerged as a powerful alternative to traditional REST APIs. With its flexibility, efficiency, and ability to fetch&hellip;
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                <p>In the ever-evolving landscape of web development, APIs play a crucial role in enabling communication between frontend and backend systems. Among the various API technologies available, <strong>GraphQL</strong> has emerged as a powerful alternative to traditional REST APIs. With its flexibility, efficiency, and ability to fetch exactly what is needed, GraphQL has gained significant traction in modern applications.</p>
+<p>In this blog post, we will explore how to integrate <strong>GraphQL</strong> into <strong>Java Spring Boot</strong> applications. We'll cover the basics of GraphQL, why it's beneficial, and provide a step-by-step guide to building a GraphQL API using Spring Boot.</p>
+<p>---</p>
+<h2>What is GraphQL?</h2>
+<p>GraphQL is a query language for APIs that was developed by Facebook in 2012 and open-sourced in 2015. Unlike REST, which typically exposes multiple endpoints for different resources, GraphQL allows clients to request exactly the data they need through a single endpoint. This reduces over-fetching and under-fetching of data, leading to more efficient and optimized APIs.</p>
+<p>Key features of GraphQL include:</p>
+<ul>
+<li><strong>Single Endpoint</strong>: All queries and mutations are sent to a single endpoint.</li>
+</ul>
+<ul>
+<li><strong>Strongly Typed Schema</strong>: GraphQL enforces a schema that defines the structure of the data.</li>
+</ul>
+<ul>
+<li><strong>Hierarchical Queries</strong>: Clients can request nested data structures in a single query.</li>
+</ul>
+<ul>
+<li><strong>Real-Time Updates</strong>: GraphQL supports subscriptions for real-time data updates.</li>
+</ul>
+<p>---</p>
+<h2>Why Use GraphQL with Spring Boot?</h2>
+<p>Spring Boot is a popular framework for building Java-based microservices and APIs. When combined with GraphQL, it offers several advantages:</p>
+<ol>
+<li><strong>Flexibility</strong>: Clients can request only the fields they need, reducing payload size and improving performance.</li>
+</ol>
+<ol>
+<li><strong>Reduced Overhead</strong>: Developers can avoid creating multiple REST endpoints for different use cases.</li>
+</ol>
+<ol>
+<li><strong>Strong Typing</strong>: The GraphQL schema ensures type safety and provides clear documentation for API consumers.</li>
+</ol>
+<ol>
+<li><strong>Scalability</strong>: GraphQL's ability to handle complex queries makes it suitable for large-scale applications.</li>
+</ol>
+<p>---</p>
+<h2>Setting Up a GraphQL API in Spring Boot</h2>
+<p>Now, let's dive into the implementation. We'll create a simple Spring Boot application with a GraphQL API that manages a list of books.</p>
+<h3>Step 1: Create a Spring Boot Project</h3>
+<p>Start by generating a Spring Boot project using <a href="https://start.spring.io/">Spring Initializr</a>. Include the following dependencies:</p>
+<ul>
+<li><strong>Spring Web</strong></li>
+</ul>
+<ul>
+<li><strong>Spring Data JPA</strong></li>
+</ul>
+<ul>
+<li><strong>H2 Database</strong> (for simplicity, we'll use an in-memory database)</li>
+</ul>
+<ul>
+<li><strong>GraphQL Java Tools</strong> or <strong>Spring GraphQL</strong></li>
+</ul>
+<p>Alternatively, you can add these dependencies manually to your <code>pom.xml</code>:</p>
+<pre><code>xml
+
+    
+        org.springframework.boot
+        spring-boot-starter-web
+    
+    
+        org.springframework.boot
+        spring-boot-starter-data-jpa
+    
+    
+        com.graphql-java
+        graphql-spring-boot-starter
+        12.0.0
+    
+    
+        com.graphql-java
+        graphql-java-tools
+        12.0.0
+    
+    
+        com.h2database
+        h2
+        runtime
+    
+</code></pre>
+<h3>Step 2: Define the Entity and Repository</h3>
+<p>Create a <code>Book</code> entity and a corresponding repository:</p>
+<pre><code>java
+package com.example.graphql.model;</code></pre>
+<p>import jakarta.persistence.Entity;</p>
+<pre><code>
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;</code></pre>
+<p>@Entity</p>
+<pre><code>
+public class Book {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String title;
+    private String author;</code></pre>
+<p>// Getters and Setters</p>
+<pre><code>
+}</code></pre>
+<pre><code>java
+package com.example.graphql.repository;</code></pre>
+<p>import com.example.graphql.model.Book;</p>
+<pre><code>
+import org.springframework.data.jpa.repository.JpaRepository;</code></pre>
+<p>public interface BookRepository extends JpaRepository&lt;book, long=""&gt; {&lt;/book,&gt;</p>
+<pre><code>
+}</code></pre>
+<h3>Step 3: Define the GraphQL Schema</h3>
+<p>Create a <code>schema.graphqls</code> file in the <code>src/main/resources</code> directory. This file defines the structure of your GraphQL API:</p>
 <pre><code>graphql
-type Message {
-  id: ID!
-  content: String!
-  sender: String!
+type Book {
+    id: ID!
+    title: String!
+    author: String!
 }</code></pre>
 <p>type Query {</p>
 <pre><code>
-  messages: [Message]
+    allBooks: [Book]
+    bookById(id: ID!): Book
 }</code></pre>
 <p>type Mutation {</p>
 <pre><code>
-  sendMessage(content: String!, sender: String!): Message
+    addBook(title: String!, author: String!): Book
 }</code></pre>
-<p>type Subscription {</p>
+<h3>Step 4: Implement Resolvers</h3>
+<p>Resolvers are responsible for fetching data and handling mutations. Create a resolver class:</p>
+<pre><code>java
+package com.example.graphql.resolver;</code></pre>
+<p>import com.example.graphql.model.Book;</p>
 <pre><code>
-  newMessage: Message
+import com.example.graphql.repository.BookRepository;
+import com.coxautodev.graphql.tools.GraphQLQueryResolver;
+import com.coxautodev.graphql.tools.GraphQLMutationResolver;
+import org.springframework.stereotype.Component;</code></pre>
+<p>@Component</p>
+<pre><code>
+public class BookResolver implements GraphQLQueryResolver, GraphQLMutationResolver {</code></pre>
+<p>private final BookRepository bookRepository;</p>
+<pre><code></code></pre>
+<p>public BookResolver(BookRepository bookRepository) {</p>
+<pre><code>
+        this.bookRepository = bookRepository;
+    }</code></pre>
+<p>public Iterable allBooks() {</p>
+<pre><code>
+        return bookRepository.findAll();
+    }</code></pre>
+<p>public Book bookById(Long id) {</p>
+<pre><code>
+        return bookRepository.findById(id).orElse(null);
+    }</code></pre>
+<p>public Book addBook(String title, String author) {</p>
+<pre><code>
+        Book book = new Book();
+        book.setTitle(title);
+        book.setAuthor(author);
+        return bookRepository.save(book);
+    }
 }</code></pre>
-<h3>4. <strong>Implement Resolvers</strong></h3>
-<p>Write resolvers for queries, mutations, and subscriptions:</p>
-<pre><code>javascript
-const messages = [];</code></pre>
-<p>const resolvers = {</p>
+<h3>Step 5: Configure the Application</h3>
+<p>Add the necessary configuration to enable GraphQL in your Spring Boot application. Create a <code>GraphQLProvider</code> class:</p>
+<pre><code>java
+package com.example.graphql.config;</code></pre>
+<p>import com.coxautodev.graphql.tools.SchemaParser;</p>
 <pre><code>
-  Query: {
-    messages: () =&gt; messages,
-  },
-  Mutation: {
-    sendMessage: (_, { content, sender }) =&gt; {
-      const newMessage = { id: messages.length + 1, content, sender };
-      messages.push(newMessage);
-      pubsub.publish('NEW_MESSAGE', { newMessage });
-      return newMessage;
-    },
-  },
-  Subscription: {
-    newMessage: {
-      subscribe: () =&gt; pubsub.asyncIterator(['NEW_MESSAGE']),
-    },
-  },
-};</code></pre>
-<h3>5. <strong>Set Up Apollo Server with WebSocket</strong></h3>
-<p>Configure Apollo Server to use WebSockets for subscriptions:</p>
-<pre><code>javascript
-const { ApolloServer } = require('apollo-server');
-const { WebSocketServer } = require('ws');
-const { useServer } = require('graphql-ws/lib/use/ws');</code></pre>
-<p>const server = new ApolloServer({</p>
+import graphql.schema.GraphQLSchema;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;</code></pre>
+<p>@Configuration</p>
 <pre><code>
-  typeDefs,
-  resolvers,
-});</code></pre>
-<p>const httpServer = server.listen({ port: 4000 }, () =&gt; {</p>
+public class GraphQLProvider {</code></pre>
+<p>@Bean</p>
 <pre><code>
-  console.log('Server running at http://localhost:4000');
-});</code></pre>
-<p>const wsServer = new WebSocketServer({</p>
-<pre><code>
-  server: httpServer.server,
-  path: '/graphql',
-});</code></pre>
-<p><code>useServer({ schema }, wsServer);</code></p>
-<p> </p>
-<h3>6. <strong>Test the Subscription</strong></h3>
-<p>You can test the subscription using tools like Apollo Client or GraphQL Playground. When a new message is sent via the <code>sendMessage</code> mutation, the subscription will push the update to all subscribed clients.</p>
-<p>---</p>
-<h2>Best Practices for Using GraphQL Subscriptions</h2>
-<ol>
-<li><strong>Optimize Payload Size</strong></li>
-</ol>
-<p>Ensure that only the necessary data is included in subscription payloads to minimize bandwidth usage.</p>
-<ol>
-<li><strong>Handle Connection Lifecycle</strong></li>
-</ol>
-<p>Manage WebSocket connections carefully, including handling disconnections and reconnections gracefully.</p>
-<ol>
-<li><strong>Secure Your Subscriptions</strong></li>
-</ol>
-<p>Authenticate and authorize subscription requests to prevent unauthorized access to real-time data.</p>
-<ol>
-<li><strong>Use a Scalable Pub/Sub System</strong></li>
-</ol>
-<p>For production-grade applications, use a robust pub/sub system like Redis or Kafka to handle large numbers of subscriptions efficiently.</p>
-<ol>
-<li><strong>Monitor Performance</strong></li>
-</ol>
-<p>Monitor the performance of your subscriptions to identify bottlenecks and optimize resource usage.</p>
-<p>---</p>
-<h2>Conclusion</h2>
-<p>GraphQL Subscriptions are a powerful tool for building real-time applications. By enabling event-driven communication between the server and the client, they provide a seamless way to deliver live GraphQL Playground: Exploring the GraphiQL Interfaceupdates without the inefficiencies of polling. Combined with GraphQL’s flexibility and efficiency, subscriptions make it easier than ever to build responsive, interactive applications.</p>
-<p>Whether you’re building a chat app, a live dashboard, or a collaborative tool, GraphQL Subscriptions can help you deliver a superior user experience. So why wait? Dive into GraphQL Subscriptions today and unlock the full potential of real-time data in your applications!</p>
-<p>---</p>
-<p>Have you used GraphQL Subscriptions in your projects? Share your experiences and insights in the comments below!</p>
-<p> </p>
-<p><a href="https://aymengn.github.io/graphql/graphql-fragments-reusing-query-logic.html">GraphQL Fragments: Reusing Query Logic</a></p>
-<p> </p>
-<p><a href="https://aymengn.github.io/graphql/understanding-graphql-scalars-and-enums.html">Understanding GraphQL Scalars and Enums</a></p>
-<p><a href="https://aymengn.github.io/graphql/graphql-directives-skip-and-include.html">GraphQL Directives: @skip and @include</a></p>
-<p><a href="https://aymengn.github.io/graphql/building-a-graphql-api-with-nodejs-and-express.html">Building a GraphQL API with Node.js and Express</a></p>
-            ]]>
-        </content>
-    </entry>
-    <entry>
-        <title>GraphQL Playground: Exploring the GraphiQL Interface</title>
-        <author>
-            <name>aymen gn</name>
-        </author>
-        <link href="https://aymengn.github.io/graphql/graphql-playground-exploring-the-graphiql-interface.html"/>
-        <id>https://aymengn.github.io/graphql/graphql-playground-exploring-the-graphiql-interface.html</id>
-
-        <updated>2025-03-26T16:02:39+01:00</updated>
-            <summary>
-                <![CDATA[
-                    GraphQL has revolutionized the way developers interact with APIs, offering a more efficient and flexible alternative to traditional REST APIs. One of the most powerful tools for working with GraphQL is GraphiQL, an in-browser IDE that allows developers to explore, query, and debug GraphQL APIs&hellip;
-                ]]>
-            </summary>
-        <content type="html">
-            <![CDATA[
-                <p>GraphQL has revolutionized the way developers interact with APIs, offering a more efficient and flexible alternative to traditional REST APIs. One of the most powerful tools for working with GraphQL is <strong>GraphiQL</strong>, an in-browser IDE that allows developers to explore, query, and debug GraphQL APIs with ease. In this blog post, we’ll dive into the <strong>GraphiQL interface</strong>, its features, and how it enhances the development experience when working with GraphQL.</p>
-<p>---</p>
-<h2>What is GraphiQL?</h2>
-<p>GraphiQL (pronounced "graphical") is an interactive, browser-based GraphQL IDE that provides a user-friendly interface for querying and exploring GraphQL APIs. It was originally developed by Facebook as part of the GraphQL ecosystem and has since become a go-to tool for developers working with GraphQL.</p>
-<p>GraphiQL serves as both a <strong>playground</strong> and a <strong>learning tool</strong>, enabling developers to experiment with queries, mutations, and subscriptions in real-time. It also offers built-in documentation and error handling, making it easier to understand and work with complex GraphQL schemas.</p>
-<p>---</p>
-<h2>Why Use GraphiQL?</h2>
-<p>Before we delve into the specifics of the GraphiQL interface, let’s take a moment to understand why it’s such a valuable tool for developers:</p>
-<ol>
-<li><strong>Interactive Querying</strong>: GraphiQL allows you to write and execute GraphQL queries directly in the browser, providing instant feedback.</li>
-</ol>
-<ol>
-<li><strong>Auto-Generated Documentation</strong>: The interface automatically generates and displays API documentation based on the schema, saving time and effort.</li>
-</ol>
-<ol>
-<li><strong>Error Handling</strong>: GraphiQL highlights syntax errors and provides detailed error messages, helping you debug issues quickly.</li>
-</ol>
-<ol>
-<li><strong>Schema Exploration</strong>: You can explore the entire GraphQL schema, including types, fields, and relationships, without leaving the interface.</li>
-</ol>
-<ol>
-<li><strong>Real-Time Testing</strong>: Developers can test queries and mutations in real-time, making it ideal for prototyping and debugging.</li>
-</ol>
-<p>---</p>
-<h2>Exploring the GraphiQL Interface</h2>
-<p>The GraphiQL interface is clean, intuitive, and packed with features. Let’s break it down into its key components:</p>
-<h3>1. <strong>Query Editor</strong></h3>
-<p>At the heart of GraphiQL is the <strong>query editor</strong>, where you write your GraphQL queries, mutations, and subscriptions. The editor supports syntax highlighting, auto-completion, and indentation, making it easy to craft complex queries.</p>
-<p>For example, here’s a simple query to fetch user data:</p>
+    public GraphQLSchema graphQLSchema() {
+        return SchemaParser.newParser()
+                .file("schema.graphqls")
+                .resolvers(new BookResolver())
+                .build()
+                .makeExecutableSchema();
+    }
+}</code></pre>
+<h3>Step 6: Test the API</h3>
+<p>Run the Spring Boot application and use a tool like <strong>GraphiQL</strong> or <strong>Postman</strong> to test your GraphQL API. Here are some sample queries and mutations:</p>
+<h4>Query All Books</h4>
 <pre><code>graphql
 query {
-  user(id: "1") {
-    name
-    email
-    posts {
-      title
-      content
+    allBooks {
+        id
+        title
+        author
     }
-  }
 }</code></pre>
-<p>Once you’ve written your query, click the <strong>"Play" button</strong> (or press <code>Ctrl + Enter</code>) to execute it. The results will appear in the right-hand panel.</p>
-<p>---</p>
-<h3>2. <strong>Response Panel</strong></h3>
-<p>The <strong>response panel</strong> displays the results of your query in JSON format. If there are any errors in your query, they will also be shown here, along with helpful error messages.</p>
-<p>For instance, if you forget to include a required field or make a typo, GraphiQL will highlight the issue and provide guidance on how to fix it.</p>
-<p>---</p>
-<h3>3. <strong>Documentation Explorer</strong></h3>
-<p>One of the standout features of GraphiQL is the <strong>documentation explorer</strong>, which provides a comprehensive overview of the GraphQL schema. You can access it by clicking the <strong>"Docs"</strong> button in the top-right corner.</p>
-<p>The documentation explorer allows you to:</p>
-<ul>
-<li>View all available queries, mutations, and subscriptions.</li>
-</ul>
-<ul>
-<li>Explore types, fields, and their descriptions.</li>
-</ul>
-<ul>
-<li>Understand the structure of nested objects and relationships.</li>
-</ul>
-<p>This feature is particularly useful when working with unfamiliar APIs or large schemas.</p>
-<p>---</p>
-<h3>4. <strong>Schema Inspector</strong></h3>
-<p>The <strong>schema inspector</strong> complements the documentation explorer by providing a detailed view of the GraphQL schema. It allows you to examine type definitions, input types, and directives.</p>
-<p>To access the schema inspector, click the <strong>"Schema"</strong> button next to the "Docs" button. Here, you can see the entire schema structure, including enums, interfaces, and unions.</p>
-<p>---</p>
-<h3>5. <strong>History and Variables</strong></h3>
-<p>GraphiQL includes additional tools to enhance productivity:</p>
-<ul>
-<li><strong>Query History</strong>: You can view and reuse previous queries by clicking the <strong>"History"</strong> button. This is especially helpful when iterating on complex queries.</li>
-</ul>
-<ul>
-<li><strong>Variables Pane</strong>: For queries that require variables, you can define them in the <strong>variables pane</strong> below the query editor. This keeps your queries clean and reusable.</li>
-</ul>
-<p>For example, here’s how you might use variables in a query:</p>
+<h4>Query a Single Book by ID</h4>
 <pre><code>graphql
-query GetUser($id: ID!) {
-  user(id: $id) {
-    name
-    email
-  }
+query {
+    bookById(id: 1) {
+        id
+        title
+        author
+    }
 }</code></pre>
-<p>And the corresponding variables:</p>
-<pre><code>json
-{
-  "id": "1"
+<h4>Add a New Book</h4>
+<pre><code>graphql
+mutation {
+    addBook(title: "The Great Gatsby", author: "F. Scott Fitzgerald") {
+        id
+        title
+        author
+    }
 }</code></pre>
-<p>---</p>
-<h2>Advanced Features of GraphiQL</h2>
-<p>While the basic features of GraphiQL are incredibly useful, it also offers advanced functionality for power users:</p>
-<h3>1. <strong>Subscriptions</strong></h3>
-<p>If your GraphQL API supports real-time updates via subscriptions, GraphiQL allows you to test them directly in the interface. Simply write a subscription query, and the response panel will update dynamically as new data arrives.</p>
-<h3>2. <strong>Custom Headers</strong></h3>
-<p>Some GraphQL APIs require authentication or custom headers for requests. GraphiQL lets you configure these headers in the settings, ensuring that your queries are properly authenticated.</p>
-<h3>3. <strong>Extensions</strong></h3>
-<p>Modern versions of GraphiQL support extensions, which add extra functionality to the interface. For example, you can integrate tracing tools or performance metrics to analyze query performance.</p>
-<p>---</p>
-<h2>Tips for Getting the Most Out of GraphiQL</h2>
-<p>To maximize your productivity with GraphiQL, consider the following tips:</p>
-<ol>
-<li><strong>Use Auto-Completion</strong>: Take advantage of the auto-completion feature to speed up query writing and reduce errors.</li>
-</ol>
-<ol>
-<li><strong>Leverage Documentation</strong>: Familiarize yourself with the schema using the documentation explorer before writing queries.</li>
-</ol>
-<ol>
-<li><strong>Test Incrementally</strong>: Start with simple queries and gradually build complexity. This makes it easier to debug issues.</li>
-</ol>
-<ol>
-<li><strong>Save Queries Locally</strong>: While GraphiQL doesn’t have built-in query saving, you can copy and paste queries into a text editor for future reference.</li>
-</ol>
-<ol>
-<li><strong>Explore Extensions</strong>: Check out community-developed extensions to enhance your GraphiQL experience.</li>
-</ol>
-<p>---</p>
-<h2>Alternatives to GraphiQL</h2>
-<p>While GraphiQL is a fantastic tool, there are other GraphQL playgrounds and IDEs worth exploring:</p>
-<ul>
-<li><strong>Apollo Studio Explorer</strong>: A cloud-based GraphQL IDE with advanced features like schema mocking and performance insights.</li>
-</ul>
-<ul>
-<li><strong>Insomnia</strong>: A popular API client that supports GraphQL queries and mutations.</li>
-</ul>
-<ul>
-<li><strong>Postman</strong>: Another versatile API tool that recently added GraphQL support.</li>
-</ul>
-<p>Each of these tools has its own strengths, so it’s worth experimenting to find the one that best suits your workflow.</p>
 <p>---</p>
 <h2>Conclusion</h2>
-<p>GraphiQL is an indispensable tool for anyone working with GraphQL. Its intuitive interface, powerful features, and real-time feedback make it an ideal environment for exploring and testing GraphQL APIs. Whether you’re a beginner learning the ropes or an experienced developer fine-tuning complex queries, GraphiQL simplifies the process and enhances productivity.</p>
-<p>So, the next time you’re working with a GraphQL API, fire up GraphiQL and start exploring. You might be surprised at how much easier and enjoyable API development can be!</p>
-<p>Happy querying! 🚀</p>
-<p><a href="https://aymengn.github.io/graphql/introduction-to-graphql-schema-design.html">Introduction to GraphQL Schema Design</a></p>
-<p> </p>
-<p><a href="https://aymengn.github.io/graphql/graphql-fragments-reusing-query-logic.html">GraphQL Fragments: Reusing Query Logic</a></p>
-<p><a href="https://aymengn.github.io/graphql/understanding-graphql-scalars-and-enums.html">Understanding GraphQL Scalars and Enums</a></p>
-<p><a href="https://aymengn.github.io/graphql/graphql-directives-skip-and-include.html">GraphQL Directives: @skip and @include</a></p>
+<p>Integrating GraphQL into a Spring Boot application provides a flexible and efficient way to build APIs. By leveraging tools like <strong>GraphQL Java Tools</strong> and <strong>Spring Data JPA</strong>, developers can quickly create robust APIs that cater to the specific needs of their clients.</p>
+<p>In this guide, we built a simple GraphQL API for managing books. You can extend this foundation to include more complex features like authentication, pagination, and subscriptions. As you explore GraphQL further, you'll discover its potential to streamline API development and enhance user experiences.</p>
+<p>Happy coding! 🚀</p>
+<p><a href="https://aymengn.github.io/graphql/react-and-graphql-fetching-data-with-apollo-client.html">React and GraphQL: Fetching Data with Apollo Client</a></p>
+<p><a href="https://aymengn.github.io/graphql/vuejs-and-graphql-building-a-modern-web-app.html">Vue.js and GraphQL: Building a Modern Web App</a></p>
             ]]>
         </content>
     </entry>
     <entry>
-        <title>Introduction to GraphQL Schema Design</title>
+        <title>GraphQL and PHP: Using Webonyx GraphQL Library</title>
         <author>
             <name>aymen gn</name>
         </author>
-        <link href="https://aymengn.github.io/graphql/introduction-to-graphql-schema-design.html"/>
-        <id>https://aymengn.github.io/graphql/introduction-to-graphql-schema-design.html</id>
+        <link href="https://aymengn.github.io/graphql/graphql-and-php-using-webonyx-graphql-library.html"/>
+        <id>https://aymengn.github.io/graphql/graphql-and-php-using-webonyx-graphql-library.html</id>
 
-        <updated>2025-03-26T15:54:47+01:00</updated>
+        <updated>2025-03-26T17:52:20+01:00</updated>
             <summary>
                 <![CDATA[
-                    GraphQL is a query language for APIs and a runtime for executing those queries by using a type system defined for your data. One of the most important aspects of building a GraphQL API is designing the schema, which serves as the contract between the&hellip;
+                    GraphQL has revolutionized the way APIs are designed and consumed. Unlike traditional REST APIs, where endpoints return fixed data structures, GraphQL allows clients to request exactly the data they need, making it more efficient and flexible. For PHP developers, integrating GraphQL into their applications is&hellip;
                 ]]>
             </summary>
         <content type="html">
             <![CDATA[
-                <p>GraphQL is a query language for APIs and a runtime for executing those queries by using a type system defined for your data. One of the most important aspects of building a GraphQL API is designing the <strong>schema</strong>, which serves as the contract between the client and the server, defining what data can be queried and how it should be structured.</p>
-<p>In this guide, we'll introduce you to the basics of <strong>GraphQL schema design</strong> and outline some best practices to follow when creating your own schema.</p>
+                <p>GraphQL has revolutionized the way APIs are designed and consumed. Unlike traditional REST APIs, where endpoints return fixed data structures, GraphQL allows clients to request exactly the data they need, making it more efficient and flexible. For PHP developers, integrating GraphQL into their applications is now easier than ever thanks to libraries like <strong>Webonyx GraphQL</strong>.</p>
+<p>In this blog post, we’ll explore what GraphQL is, why it’s beneficial, and how you can use the <strong>Webonyx GraphQL library</strong> to build a GraphQL API in PHP.</p>
 <p>---</p>
-<h3>What is a GraphQL Schema?</h3>
-<p>A <strong>GraphQL schema</strong> defines the capabilities of your API. It describes:</p>
-<ol>
-<li><strong>Types</strong>: The objects that can be queried or mutated.</li>
-</ol>
-<ol>
-<li><strong>Queries</strong>: How clients can request data from the server.</li>
-</ol>
-<ol>
-<li><strong>Mutations</strong>: How clients can modify data on the server.</li>
-</ol>
-<ol>
-<li><strong>Subscriptions</strong>: How clients can receive real-time updates from the server (optional).</li>
-</ol>
-<p>The schema acts as a blueprint for the entire API. It tells the client what kind of operations are allowed and the structure of the responses they will receive.</p>
-<p>---</p>
-<h3>Core Components of a GraphQL Schema</h3>
-<h4>1. Types</h4>
-<p>Every piece of data in GraphQL has a type. There are two kinds of types:</p>
+<h2>What is GraphQL?</h2>
+<p>GraphQL is a query language for APIs and a runtime for executing those queries with your existing data. Developed by Facebook in 2012 and open-sourced in 2015, GraphQL provides a more efficient and powerful alternative to REST APIs. Key features of GraphQL include:</p>
 <ul>
-<li><strong>Scalar Types</strong>: Basic types like <code>Int</code>, <code>Float</code>, <code>String</code>, <code>Boolean</code>, and <code>ID</code>.</li>
+<li><strong>Single Endpoint</strong>: Unlike REST, which often requires multiple endpoints for different resources, GraphQL uses a single endpoint for all queries and mutations.</li>
 </ul>
 <ul>
-<li><strong>Object Types</strong>: Custom types that represent entities in your domain (e.g., <code>User</code>, <code>Post</code>, <code>Comment</code>).</li>
+<li><strong>Flexible Queries</strong>: Clients can request only the fields they need, avoiding over-fetching or under-fetching of data.</li>
 </ul>
-<p>Here’s an example of defining a custom object type:</p>
-<pre><code>graphql
-type User {
-  id: ID!
-  name: String!
-  email: String!
-  posts: [Post!]!
-}</code></pre>
-<p>type Post {</p>
+<ul>
+<li><strong>Strongly Typed Schema</strong>: GraphQL APIs are defined by a schema that specifies the types of data available, ensuring type safety and predictable responses.</li>
+</ul>
+<ul>
+<li><strong>Real-Time Updates</strong>: GraphQL supports subscriptions, enabling real-time data updates.</li>
+</ul>
+<p>---</p>
+<h2>Why Use GraphQL with PHP?</h2>
+<p>PHP is one of the most widely used server-side programming languages, powering millions of websites and applications. While PHP traditionally works well with REST APIs, adopting GraphQL can bring several advantages:</p>
+<ol>
+<li><strong>Improved Performance</strong>: By fetching only the required data, GraphQL reduces payload sizes and improves application performance.</li>
+</ol>
+<ol>
+<li><strong>Better Developer Experience</strong>: A strongly typed schema makes it easier for developers to understand the API and write queries.</li>
+</ol>
+<ol>
+<li><strong>Scalability</strong>: GraphQL’s flexibility allows APIs to evolve without breaking existing clients.</li>
+</ol>
+<ol>
+<li><strong>Community Support</strong>: With libraries like Webonyx GraphQL, PHP developers can easily integrate GraphQL into their projects.</li>
+</ol>
+<p>---</p>
+<h2>Introducing the Webonyx GraphQL Library</h2>
+<p>The <strong>Webonyx GraphQL library</strong> is a popular PHP implementation of the GraphQL specification. It provides tools to define schemas, execute queries, and handle mutations. Its simplicity and adherence to the GraphQL spec make it an excellent choice for building GraphQL APIs in PHP.</p>
+<h3>Installation</h3>
+<p>To get started, install the Webonyx GraphQL library using Composer:</p>
+<pre><code>bash
+composer require webonyx/graphql-php</code></pre>
+<p>This will add the library to your project and set up the necessary dependencies.</p>
+<p>---</p>
+<h2>Building a GraphQL API with Webonyx</h2>
+<p>Let’s walk through creating a simple GraphQL API using the Webonyx library. We’ll build an API that manages a list of books, allowing clients to query book details and add new books.</p>
+<h3>Step 1: Define the Schema</h3>
+<p>The first step is to define the GraphQL schema. The schema describes the types of data available and the operations (queries and mutations) that can be performed.</p>
+<pre><code>php
+use GraphQL\Type\Definition\ObjectType;
+use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Schema;</code></pre>
+<p>// Define the Book type</p>
 <pre><code>
-  id: ID!
-  title: String!
-  content: String!
-  author: User!
+$bookType = new ObjectType([
+    'name' =&gt; 'Book',
+    'fields' =&gt; [
+        'id' =&gt; Type::nonNull(Type::id()),
+        'title' =&gt; Type::nonNull(Type::string()),
+        'author' =&gt; Type::nonNull(Type::string()),
+    ],
+]);</code></pre>
+<p>// Define the Query type</p>
+<pre><code>
+$queryType = new ObjectType([
+    'name' =&gt; 'Query',
+    'fields' =&gt; [
+        'books' =&gt; [
+            'type' =&gt; Type::listOf($bookType),
+            'resolve' =&gt; function () {
+                // Mock data
+                return [
+                    ['id' =&gt; '1', 'title' =&gt; 'The Great Gatsby', 'author' =&gt; 'F. Scott Fitzgerald'],
+                    ['id' =&gt; '2', 'title' =&gt; '1984', 'author' =&gt; 'George Orwell'],
+                ];
+            },
+        ],
+    ],
+]);</code></pre>
+<p>// Define the Mutation type</p>
+<pre><code>
+$mutationType = new ObjectType([
+    'name' =&gt; 'Mutation',
+    'fields' =&gt; [
+        'addBook' =&gt; [
+            'type' =&gt; $bookType,
+            'args' =&gt; [
+                'title' =&gt; Type::nonNull(Type::string()),
+                'author' =&gt; Type::nonNull(Type::string()),
+            ],
+            'resolve' =&gt; function ($root, $args) {
+                // Simulate adding a book
+                return [
+                    'id' =&gt; uniqid(),
+                    'title' =&gt; $args['title'],
+                    'author' =&gt; $args['author'],
+                ];
+            },
+        ],
+    ],
+]);</code></pre>
+<p>// Create the schema</p>
+<pre><code>
+$schema = new Schema([
+    'query' =&gt; $queryType,
+    'mutation' =&gt; $mutationType,
+]);</code></pre>
+<h3>Step 2: Handle Incoming Requests</h3>
+<p>Next, we need to handle incoming GraphQL requests. This involves parsing the query, validating it against the schema, and executing it.</p>
+<pre><code>php
+use GraphQL\GraphQL;
+use GraphQL\Error\FormattedError;</code></pre>
+<p>// Get the raw POST body</p>
+<pre><code>
+$input = json<em>decode(file</em>get_contents('php://input'), true);</code></pre>
+<p>$query = $input['query'] ?? null;</p>
+<pre><code>
+$variables = $input['variables'] ?? null;</code></pre>
+<p>try {</p>
+<pre><code>
+    // Execute the query
+    $result = GraphQL::executeQuery($schema, $query, null, null, $variables);
+    $output = $result-&gt;toArray();
+} catch (\Exception $e) {
+    // Handle errors
+    $output = [
+        'errors' =&gt; [FormattedError::createFromException($e)],
+    ];
 }</code></pre>
-<p>In the above example:</p>
-<ul>
-<li>The <code>User</code> type has fields like <code>id</code>, <code>name</code>, and <code>email</code>, along with a list of <code>Post</code> objects (<code>posts</code>).</li>
-</ul>
-<ul>
-<li>The <code>Post</code> type has <code>id</code>, <code>title</code>, <code>content</code>, and a reference back to the <code>User</code> who authored it (<code>author</code>).</li>
-</ul>
-<h4>2. Queries</h4>
-<p>Queries define how clients can fetch data. Every GraphQL service has a root query type, often named <code>Query</code>. Here’s an example:</p>
+<p>// Return JSON response</p>
+<pre><code>
+header('Content-Type: application/json');
+echo json_encode($output);</code></pre>
+<h3>Step 3: Test the API</h3>
+<p>You can test the API using tools like <strong>Postman</strong> or <strong>GraphQL Playground</strong>. Here’s an example query to fetch all books:</p>
 <pre><code>graphql
-type Query {
-  getUser(id: ID!): User
-  getPosts(limit: Int = 10): [Post!]!
-}</code></pre>
-<p>In this case:</p>
-<ul>
-<li><code>getUser</code>: Fetches a single <code>User</code> based on their <code>id</code>.</li>
-</ul>
-<ul>
-<li><code>getPosts</code>: Returns a list of <code>Post</code> objects, with an optional <code>limit</code> argument to control how many posts are returned.</li>
-</ul>
-<h4>3. Mutations</h4>
-<p>Mutations define how clients can modify data (create, update, delete). Similar to queries, every GraphQL service also has a root mutation type, often named <code>Mutation</code>.</p>
-<pre><code>graphql
-type Mutation {
-  createUser(name: String!, email: String!): User!
-  createPost(title: String!, content: String!, authorId: ID!): Post!
-}</code></pre>
-<p>In this case:</p>
-<ul>
-<li><code>createUser</code>: Creates a new <code>User</code> with the given <code>name</code> and <code>email</code>.</li>
-</ul>
-<ul>
-<li><code>createPost</code>: Creates a new <code>Post</code> associated with a specific <code>authorId</code>.</li>
-</ul>
-<h4>4. Subscriptions (Optional)</h4>
-<p>Subscriptions allow clients to listen for real-time updates when certain events occur. For instance:</p>
-<pre><code>graphql
-type Subscription {
-  postCreated: Post!
-}</code></pre>
-<p>This subscription would notify clients whenever a new post is created.</p>
-<p>---</p>
-<h3>Key Concepts in Schema Design</h3>
-<h4>1. Strongly Typed System</h4>
-<p>GraphQL schemas are strongly typed, meaning every field must have a defined type. This provides clear expectations for both the client and server.</p>
-<h4>2. Nested Data Structures</h4>
-<p>One of the key benefits of GraphQL is its ability to handle deeply nested queries. You can retrieve related data in a single query:</p>
-<pre><code>graphql
-query GetUserWithPosts {
-  getUser(id: "1") {
+{
+  books {
     id
-    name
-    posts {
-      title
-      content
+    title
+    author
+  }
+}</code></pre>
+<p>And here’s an example mutation to add a new book:</p>
+<pre><code>graphql
+mutation {
+  addBook(title: "To Kill a Mockingbird", author: "Harper Lee") {
+    id
+    title
+    author
+  }
+}</code></pre>
+<p>---</p>
+<h2>Benefits of Using Webonyx GraphQL</h2>
+<ol>
+<li><strong>Ease of Use</strong>: The library provides a straightforward API for defining schemas and handling queries.</li>
+</ol>
+<ol>
+<li><strong>Flexibility</strong>: You can customize resolvers and integrate with any data source (e.g., databases, APIs).</li>
+</ol>
+<ol>
+<li><strong>Active Community</strong>: Webonyx GraphQL is actively maintained and has a growing community of contributors.</li>
+</ol>
+<p>---</p>
+<h2>Conclusion</h2>
+<p>GraphQL offers a modern approach to building APIs, and the Webonyx GraphQL library makes it easy to integrate into PHP applications. By leveraging GraphQL’s flexibility and efficiency, you can create APIs that are both developer-friendly and performant.</p>
+<p>Whether you’re building a small project or scaling a large application, consider using Webonyx GraphQL to unlock the full potential of GraphQL in PHP. Happy coding!</p>
+<p>---</p>
+<p><strong>Further Reading</strong>:</p>
+<ul>
+<li><a href="https://webonyx.github.io/graphql-php/">Webonyx GraphQL Documentation</a></li>
+</ul>
+<ul>
+<li><a href="https://graphql.org/">GraphQL Official Website</a></li>
+<li><a href="https://aymengn.github.io/graphql/react-and-graphql-fetching-data-with-apollo-client.html">React and GraphQL: Fetching Data with Apollo Client</a></li>
+<li><a href="https://aymengn.github.io/graphql/vuejs-and-graphql-building-a-modern-web-app.html">Vue.js and GraphQL: Building a Modern Web App</a></li>
+</ul>
+            ]]>
+        </content>
+    </entry>
+    <entry>
+        <title>GraphQL with Go (Golang): Getting Started</title>
+        <author>
+            <name>aymen gn</name>
+        </author>
+        <link href="https://aymengn.github.io/graphql/graphql-with-go-golang-getting-started.html"/>
+        <id>https://aymengn.github.io/graphql/graphql-with-go-golang-getting-started.html</id>
+
+        <updated>2025-03-26T17:47:32+01:00</updated>
+            <summary>
+                <![CDATA[
+                    GraphQL has revolutionized the way developers interact with APIs by providing a flexible and efficient way to query data. Unlike REST, which often requires multiple endpoints for different resources, GraphQL allows clients to request exactly the data they need in a single query. This makes&hellip;
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                <p>GraphQL has revolutionized the way developers interact with APIs by providing a flexible and efficient way to query data. Unlike REST, which often requires multiple endpoints for different resources, GraphQL allows clients to request exactly the data they need in a single query. This makes it an excellent choice for modern applications that demand high performance and flexibility.</p>
+<p>In this blog post, we’ll explore how to get started with GraphQL in Go (Golang). We’ll walk through setting up a basic GraphQL server using the popular <code>graphql-go</code> library, define a schema, and execute queries. By the end of this guide, you’ll have a foundational understanding of how to integrate GraphQL into your Go projects.</p>
+<p>---</p>
+<h2>Why Use GraphQL with Go?</h2>
+<p>Go is known for its simplicity, performance, and concurrency support, making it a great choice for building robust backend services. When combined with GraphQL, Go can power highly efficient APIs that are both developer-friendly and scalable. Here are some reasons why you might choose GraphQL with Go:</p>
+<ol>
+<li><strong>Efficient Data Fetching</strong>: GraphQL minimizes over-fetching and under-fetching by allowing clients to request only the data they need.</li>
+</ol>
+<ol>
+<li><strong>Single Endpoint</strong>: Instead of managing multiple REST endpoints, GraphQL consolidates all queries and mutations into a single endpoint.</li>
+</ol>
+<ol>
+<li><strong>Strong Typing</strong>: GraphQL’s schema system ensures type safety, reducing errors and improving developer experience.</li>
+</ol>
+<ol>
+<li><strong>Scalability</strong>: Go’s performance and concurrency model make it ideal for handling the demands of a GraphQL API.</li>
+</ol>
+<p>---</p>
+<h2>Prerequisites</h2>
+<p>Before diving into the implementation, ensure you have the following installed on your machine:</p>
+<ol>
+<li><strong>Go</strong>: Install Go from the <a href="https://golang.org/dl/">official website</a>. Make sure your version is 1.16 or higher.</li>
+</ol>
+<ol>
+<li><strong>A Code Editor</strong>: Use any editor of your choice (e.g., VS Code, GoLand).</li>
+</ol>
+<ol>
+<li><strong>Basic Knowledge of Go</strong>: Familiarity with Go syntax and concepts like structs, functions, and HTTP servers will be helpful.</li>
+</ol>
+<p>---</p>
+<h2>Setting Up a Basic GraphQL Server</h2>
+<p>Let’s start by creating a simple GraphQL server in Go. We’ll use the <code>graphql-go</code> library, which is one of the most widely used GraphQL implementations for Go.</p>
+<h3>Step 1: Initialize Your Go Project</h3>
+<p>Create a new directory for your project and initialize it as a Go module:</p>
+<pre><code>bash
+mkdir graphql-go-example
+cd graphql-go-example
+go mod init graphql-go-example</code></pre>
+<h3>Step 2: Install Dependencies</h3>
+<p>Install the <code>graphql-go</code> and <code>graphql-go-handler</code> libraries:</p>
+<pre><code>bash
+go get github.com/graphql-go/graphql
+go get github.com/graphql-go/handler</code></pre>
+<h3>Step 3: Define a Simple Schema</h3>
+<p>Create a file named <code>main.go</code> and add the following code to define a basic GraphQL schema:</p>
+<pre><code>go
+package main</code></pre>
+<p>import (</p>
+<pre><code>
+	"encoding/json"
+	"log"
+	"net/http"</code></pre>
+<p>"github.com/graphql-go/graphql"</p>
+<pre><code>
+	"github.com/graphql-go/handler"
+)</code></pre>
+<p>func main() {</p>
+<pre><code>
+	// Define a simple GraphQL schema
+	fields := graphql.Fields{
+		"hello": &amp;graphql.Field{
+			Type: graphql.String,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				return "Hello, GraphQL with Go!", nil
+			},
+		},
+	}</code></pre>
+<p>rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: fields}</p>
+<pre><code>
+	schemaConfig := graphql.SchemaConfig{Query: graphql.NewObject(rootQuery)}
+	schema, err := graphql.NewSchema(schemaConfig)
+	if err != nil {
+		log.Fatalf("Failed to create schema: %v", err)
+	}</code></pre>
+<p>// Create a GraphQL handler</p>
+<pre><code>
+	h := handler.New(&amp;handler.Config{
+		Schema:   &amp;schema,
+		Pretty:   true,
+		GraphiQL: true, // Enable GraphiQL for testing
+	})</code></pre>
+<p>// Set up an HTTP server</p>
+<pre><code>
+	http.Handle("/graphql", h)
+	log.Println("Server is running on http://localhost:8080/graphql")
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}</code></pre>
+<h3>Step 4: Run the Server</h3>
+<p>Run the server using the following command:</p>
+<pre><code>bash
+go run main.go</code></pre>
+<p>Your GraphQL server should now be running on <code>http://localhost:8080/graphql</code>. Open this URL in your browser, and you’ll see the GraphiQL interface, which allows you to test your queries interactively.</p>
+<h3>Step 5: Test the Query</h3>
+<p>In the GraphiQL interface, execute the following query:</p>
+<pre><code>graphql
+{
+  hello
+}</code></pre>
+<p>You should receive the following response:</p>
+<pre><code>json
+{
+  "data": {
+    "hello": "Hello, GraphQL with Go!"
+  }
+}</code></pre>
+<p>Congratulations! You’ve successfully built a basic GraphQL server in Go.</p>
+<p>---</p>
+<h2>Adding More Complexity: A Todo List Example</h2>
+<p>Now that we’ve set up a simple server, let’s expand it to handle a more realistic use case—a todo list. We’ll define a <code>Todo</code> type, add some sample data, and implement queries and mutations.</p>
+<h3>Step 1: Define the Schema</h3>
+<p>Update the <code>main.go</code> file to include a <code>Todo</code> type and related queries and mutations:</p>
+<pre><code>go
+package main</code></pre>
+<p>import (</p>
+<pre><code>
+	"encoding/json"
+	"log"
+	"net/http"
+	"sync"</code></pre>
+<p>"github.com/graphql-go/graphql"</p>
+<pre><code>
+	"github.com/graphql-go/handler"
+)</code></pre>
+<p>type Todo struct {</p>
+<pre><code>
+	ID    string json:"id" Title string json:"title" Done bool json:"done" }</code></pre>
+<p>var todos = []Todo{</p>
+<pre><code>{ID: "1", Title: "Learn Go", Done: false}, {ID: "2", Title: "Build a GraphQL API", Done: false}, }</code></pre>
+<p>var todoType = graphql.NewObject(graphql.ObjectConfig{</p>
+<pre><code>Name: "Todo", Fields: graphql.Fields{ "id": &amp;graphql.Field{ Type: graphql.String, }, "title": &amp;graphql.Field{ Type: graphql.String, }, "done": &amp;graphql.Field{ Type: graphql.Boolean, }, }, })</code></pre>
+<p>func main() {</p>
+<pre><code>var mu sync.Mutex</code></pre>
+<p>// Define the root query</p>
+<pre><code>rootQuery := graphql.NewObject(graphql.ObjectConfig{ Name: "RootQuery", Fields: graphql.Fields{ "todos": &amp;graphql.Field{ Type: graphql.NewList(todoType), Resolve: func(p graphql.ResolveParams) (interface{}, error) { mu.Lock() defer mu.Unlock() return todos, nil }, }, }, })</code></pre>
+<p>// Define the mutation</p>
+<pre><code>rootMutation := graphql.NewObject(graphql.ObjectConfig{ Name: "RootMutation", Fields: graphql.Fields{ "addTodo": &amp;graphql.Field{ Type: todoType, Args: graphql.FieldConfigArgument{ "title": &amp;graphql.ArgumentConfig{ Type: graphql.NewNonNull(graphql.String), }, }, Resolve: func(p graphql.ResolveParams) (interface{}, error) { mu.Lock() defer mu.Unlock()</code></pre>
+<p>title, _ := p.Args["title"].(string)</p>
+<pre><code>newTodo := Todo{ ID: string(len(todos) + 1), Title: title, Done: false, } todos = append(todos, newTodo) return newTodo, nil }, }, }, })</code></pre>
+<p>// Create the schema</p>
+<pre><code>schema, err := graphql.NewSchema(graphql.SchemaConfig{ Query: rootQuery, Mutation: rootMutation, }) if err != nil { log.Fatalf("Failed to create schema: %v", err) }</code></pre>
+<p>// Create a GraphQL handler</p>
+<pre><code>h := handler.New(&amp;handler.Config{ Schema: &amp;schema, Pretty: true, GraphiQL: true, })</code></pre>
+<p>// Set up an HTTP server</p>
+<pre><code>http.Handle("/graphql", h) log.Println("Server is running on http://localhost:8080/graphql") log.Fatal(http.ListenAndServe(":8080", nil)) }</code></pre>
+<h3>Step 2: Test the Queries and Mutations</h3>
+<h4>Query All Todos</h4>
+<pre><code>graphql
+{
+  todos {
+    id
+    title
+    done
+  }
+}</code></pre>
+<h4>Add a New Todo</h4>
+<pre><code>graphql
+mutation {
+  addTodo(title: "Deploy to production") {
+    id
+    title
+    done
+  }
+}</code></pre>
+<p>You’ll see the newly added todo in the response.</p>
+<p>---</p>
+<h2>Conclusion</h2>
+<p>In this blog post, we’ve covered the basics of setting up a GraphQL server in Go using the <code>graphql-go</code> library. We started with a simple “Hello, World!” example and expanded it to include a more complex todo list application with queries and mutations.</p>
+<p>GraphQL’s flexibility, combined with Go’s performance, makes for a powerful combination. Whether you’re building a small personal project or a large-scale enterprise application, GraphQL with Go can help you deliver efficient and scalable APIs.</p>
+<p>From here, you can explore advanced topics like integrating with databases, implementing subscriptions for real-time updates, and optimizing performance. Happy coding!</p>
+<p><a href="https://aymengn.github.io/graphql/graphql-and-php-using-webonyx-graphql-library.html">GraphQL and PHP: Using Webonyx GraphQL Library</a></p>
+<p><a href="https://aymengn.github.io/graphql/react-and-graphql-fetching-data-with-apollo-client.html">React and GraphQL: Fetching Data with Apollo Client</a></p>
+<p><a href="https://aymengn.github.io/graphql/vuejs-and-graphql-building-a-modern-web-app.html">Vue.js and GraphQL: Building a Modern Web App</a></p>
+            ]]>
+        </content>
+    </entry>
+    <entry>
+        <title>Building a GraphQL Server with FastAPI (Python)</title>
+        <author>
+            <name>aymen gn</name>
+        </author>
+        <link href="https://aymengn.github.io/graphql/building-a-graphql-server-with-fastapi-python.html"/>
+        <id>https://aymengn.github.io/graphql/building-a-graphql-server-with-fastapi-python.html</id>
+
+        <updated>2025-03-26T17:42:20+01:00</updated>
+            <summary>
+                <![CDATA[
+                    GraphQL has revolutionized the way developers interact with APIs by providing a flexible and efficient query language. Unlike REST, where clients must adhere to predefined endpoints, GraphQL allows clients to request exactly the data they need, reducing over-fetching and under-fetching issues. Combining GraphQL with FastAPI—a&hellip;
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                <p>GraphQL has revolutionized the way developers interact with APIs by providing a flexible and efficient query language. Unlike REST, where clients must adhere to predefined endpoints, GraphQL allows clients to request exactly the data they need, reducing over-fetching and under-fetching issues. Combining GraphQL with FastAPI—a modern, high-performance Python web framework—creates a powerful stack for building APIs.</p>
+<p>In this blog post, we'll walk through the process of building a GraphQL server using FastAPI and <code>Strawberry</code>, a Python library for creating GraphQL schemas. By the end of this tutorial, you'll have a fully functional GraphQL API that can handle queries and mutations.</p>
+<p> </p>
+<h2>Why Use FastAPI with GraphQL?</h2>
+<p>FastAPI is known for its speed, simplicity, and developer-friendly features. It leverages Python's type hints to provide automatic validation, serialization, and documentation. When paired with GraphQL, FastAPI becomes an ideal choice for building APIs that are both performant and flexible.</p>
+<p>Key benefits of using FastAPI with GraphQL:</p>
+<ul>
+<li><strong>High performance</strong>: FastAPI is built on top of Starlette and Pydantic, making it one of the fastest Python frameworks.</li>
+</ul>
+<ul>
+<li><strong>Automatic documentation</strong>: FastAPI generates interactive API docs (Swagger UI and ReDoc) out of the box.</li>
+</ul>
+<ul>
+<li><strong>Type safety</strong>: GraphQL schemas benefit from Python's type hints, ensuring robust and error-free code.</li>
+</ul>
+<ul>
+<li><strong>Scalability</strong>: The combination of FastAPI and GraphQL scales well for both small and large applications.</li>
+</ul>
+<p>---</p>
+<h2>Prerequisites</h2>
+<p>Before we begin, ensure you have the following installed:</p>
+<ul>
+<li>Python 3.8 or higher</li>
+</ul>
+<ul>
+<li><code>pip</code> (Python package manager)</li>
+</ul>
+<ul>
+<li>A code editor (e.g., VS Code, PyCharm)</li>
+</ul>
+<p>Additionally, you should have basic knowledge of:</p>
+<ul>
+<li>Python programming</li>
+</ul>
+<ul>
+<li>GraphQL concepts (queries, mutations, types)</li>
+</ul>
+<ul>
+<li>REST APIs and HTTP methods</li>
+</ul>
+<p>---</p>
+<h2>Setting Up the Environment</h2>
+<p>Let's start by setting up a virtual environment and installing the required dependencies.</p>
+<h3>Step 1: Create a Virtual Environment</h3>
+<pre><code>bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate</code></pre>
+<h3>Step 2: Install Dependencies</h3>
+<p>We'll use <code>fastapi</code>, <code>uvicorn</code> (ASGI server), and <code>strawberry-graphql</code> for this project.</p>
+<pre><code>bash
+pip install fastapi uvicorn strawberry-graphql</code></pre>
+<p>---</p>
+<h2>Building the GraphQL Schema</h2>
+<p>GraphQL operates on a schema-first approach. We'll define our schema using <code>Strawberry</code>. For this example, let's create a simple API for managing a list of books.</p>
+<h3>Step 1: Define Models</h3>
+<p>Create a file named <code>models.py</code>:</p>
+<pre><code>python
+from typing import List, Optional
+from pydantic import BaseModel</code></pre>
+<p>class Book(BaseModel):</p>
+<pre><code>
+    id: int
+    title: str
+    author: str</code></pre>
+<h3>Step 2: Define GraphQL Types</h3>
+<p>Create a file named <code>schema.py</code>:</p>
+<pre><code>python
+import strawberry
+from typing import List
+from models import Book</code></pre>
+<h1>Define a GraphQL type for a book</h1>
+<pre><code>
+@strawberry.type
+class BookType:
+    id: int
+    title: str
+    author: str</code></pre>
+<h1>Define a Query class</h1>
+<pre><code>
+@strawberry.type
+class Query:
+    @strawberry.field
+    def books(self) -&gt; List[BookType]:
+        # Mock data for demonstration
+        return [
+            BookType(id=1, title="The Great Gatsby", author="F. Scott Fitzgerald"),
+            BookType(id=2, title="To Kill a Mockingbird", author="Harper Lee"),
+        ]</code></pre>
+<h1>Define a Mutation class</h1>
+<pre><code>
+@strawberry.type
+class Mutation:
+    @strawberry.mutation
+    def add_book(self, title: str, author: str) -&gt; BookType:
+        # Simulate adding a new book
+        new_book = BookType(id=3, title=title, author=author)
+        return new_book</code></pre>
+<h1>Create the schema</h1>
+<pre><code>
+schema = strawberry.Schema(query=Query, mutation=Mutation)</code></pre>
+<p>---</p>
+<h2>Integrating GraphQL with FastAPI</h2>
+<p>Now that we have our schema, let's integrate it with FastAPI.</p>
+<h3>Step 1: Create the FastAPI App</h3>
+<p>Create a file named <code>main.py</code>:</p>
+<pre><code>python
+from fastapi import FastAPI
+from strawberry.asgi import GraphQL
+from schema import schema</code></pre>
+<p>app = FastAPI()</p>
+<pre><code></code></pre>
+<h1>Add the GraphQL endpoint</h1>
+<pre><code>
+graphql_app = GraphQL(schema)</code></pre>
+<p>@app.get("/")</p>
+<pre><code>
+def read_root():
+    return {"message": "Welcome to the GraphQL server!"}</code></pre>
+<h1>Mount the GraphQL app at /graphql</h1>
+<pre><code>
+app.add<em>route("/graphql", graphql</em>app)
+app.add<em>websocket</em>route("/graphql", graphql_app)</code></pre>
+<h3>Step 2: Run the Server</h3>
+<p>Use <code>uvicorn</code> to run the FastAPI server:</p>
+<pre><code>bash
+uvicorn main:app --reload</code></pre>
+<p>Visit <code>http://127.0.0.1:8000/graphql</code> in your browser to access the GraphQL playground.</p>
+<p>---</p>
+<h2>Testing the API</h2>
+<h3>Query Example</h3>
+<p>Run the following query to fetch all books:</p>
+<pre><code>graphql
+query {
+  books {
+    id
+    title
+    author
+  }
+}</code></pre>
+<p>Response:</p>
+<pre><code>json
+{
+  "data": {
+    "books": [
+      {
+        "id": 1,
+        "title": "The Great Gatsby",
+        "author": "F. Scott Fitzgerald"
+      },
+      {
+        "id": 2,
+        "title": "To Kill a Mockingbird",
+        "author": "Harper Lee"
+      }
+    ]
+  }
+}</code></pre>
+<h3>Mutation Example</h3>
+<p>Run the following mutation to add a new book:</p>
+<pre><code>graphql
+mutation {
+  addBook(title: "1984", author: "George Orwell") {
+    id
+    title
+    author
+  }
+}</code></pre>
+<p>Response:</p>
+<pre><code>json
+{
+  "data": {
+    "addBook": {
+      "id": 3,
+      "title": "1984",
+      "author": "George Orwell"
     }
   }
 }</code></pre>
-<p>This query retrieves a user and all their posts in one network call, avoiding multiple round trips to the server.</p>
-<h4>3. Arguments and Default Values</h4>
-<p>Fields can accept arguments, allowing dynamic queries. You can also provide default values for arguments if they aren’t supplied by the client.</p>
-<pre><code>graphql
-type Query {
-  getPosts(limit: Int = 10, offset: Int = 0): [Post!]!
-}</code></pre>
-<p>In this example, <code>limit</code> defaults to <code>10</code> and <code>offset</code> defaults to <code>0</code> if no arguments are provided.</p>
-<h4>4. Non-Nullability (<code>!</code>)</h4>
-<p>You can specify whether a field is non-nullable by appending an exclamation mark (<code>!</code>) after the type. If a field is marked as non-nullable, it must always return a value; otherwise, GraphQL will throw an error.</p>
-<p>Example:</p>
-<pre><code>graphql
-type User {
-  id: ID!
-  name: String!
-  email: String
-}</code></pre>
-<p>Here, <code>id</code> and <code>name</code> are required fields, while <code>email</code> is optional.</p>
 <p>---</p>
-<h3>Best Practices for Schema Design</h3>
-<h4>1. Keep Queries Simple</h4>
-<p>Avoid overly complex queries. Instead, break down large queries into smaller ones and use aliases to differentiate them.</p>
-<h4>2. Avoid Overfetching or Underfetching</h4>
-<p>Design your schema so that clients only fetch exactly what they need. With GraphQL, clients can specify exactly which fields they want, reducing overfetching compared to REST APIs.</p>
-<h4>3. Use Enums for Fixed Sets of Values</h4>
-<p>If there are fixed sets of possible values (like statuses), use enums to ensure consistency and avoid typos.</p>
-<pre><code>graphql
-enum PostStatus {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
+<h2>Conclusion</h2>
+<p>In this tutorial, we built a GraphQL server using FastAPI and Strawberry. We defined a schema with queries and mutations, integrated it with FastAPI, and tested it using the GraphQL playground. This setup provides a solid foundation for building more complex APIs.</p>
+<p>FastAPI's performance and ease of use, combined with GraphQL's flexibility, make them a perfect match for modern API development. Whether you're building a small project or a large-scale application, this stack is worth considering.</p>
+<p>Feel free to experiment with the code and extend it further. For example, you could:</p>
+<ul>
+<li>Connect the API to a database (e.g., PostgreSQL, MongoDB).</li>
+</ul>
+<ul>
+<li>Add authentication and authorization.</li>
+</ul>
+<ul>
+<li>Implement subscriptions for real-time updates.</li>
+</ul>
+<p>Happy coding! 🚀</p>
+<p>---</p>
+<p>If you have any questions or suggestions, feel free to leave a comment below.</p>
+<p><a href="https://aymengn.github.io/graphql/graphql-with-go-golang-getting-started.html">GraphQL with Go (Golang): Getting Started</a></p>
+<p><a href="https://aymengn.github.io/graphql/graphql-and-php-using-webonyx-graphql-library.html">GraphQL and PHP: Using Webonyx GraphQL Library</a></p>
+<p><a href="https://aymengn.github.io/graphql/react-and-graphql-fetching-data-with-apollo-client.html">React and GraphQL: Fetching Data with Apollo Client</a></p>
+<p><a href="https://aymengn.github.io/graphql/vuejs-and-graphql-building-a-modern-web-app.html">Vue.js and GraphQL: Building a Modern Web App</a></p>
+            ]]>
+        </content>
+    </entry>
+    <entry>
+        <title>GraphQL in .NET Core Applications</title>
+        <author>
+            <name>aymen gn</name>
+        </author>
+        <link href="https://aymengn.github.io/graphql/graphql-in-net-core-applications.html"/>
+        <id>https://aymengn.github.io/graphql/graphql-in-net-core-applications.html</id>
+
+        <updated>2025-03-26T17:35:36+01:00</updated>
+            <summary>
+                <![CDATA[
+                    In the ever-evolving landscape of web development, APIs play a crucial role in enabling communication between clients and servers. Traditionally, REST has been the go-to architecture for building APIs. However, as applications grow more complex and client requirements become more dynamic, REST's rigid structure can&hellip;
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                <p>In the ever-evolving landscape of web development, APIs play a crucial role in enabling communication between clients and servers. Traditionally, REST has been the go-to architecture for building APIs. However, as applications grow more complex and client requirements become more dynamic, REST's rigid structure can sometimes fall short. Enter <strong>GraphQL</strong>, a query language for APIs that offers flexibility, efficiency, and precision.</p>
+<p>In this blog post, we’ll explore how to integrate GraphQL into <strong>.NET Core</strong> applications, empowering developers to build modern, scalable, and efficient APIs.</p>
+<p>---</p>
+<h2>What is GraphQL?</h2>
+<p>GraphQL is an open-source query language developed by Facebook (now Meta) in 2012 and released publicly in 2015. Unlike REST, which exposes fixed endpoints and returns predefined data structures, GraphQL allows clients to request exactly the data they need, no more, no less. This eliminates over-fetching and under-fetching of data, making it ideal for modern applications where performance and adaptability are critical.</p>
+<p>Key features of GraphQL include:</p>
+<ul>
+<li><strong>Strongly-typed schema</strong>: Defines the structure of the data and operations available.</li>
+</ul>
+<ul>
+<li><strong>Single endpoint</strong>: All queries and mutations are sent to a single endpoint.</li>
+</ul>
+<ul>
+<li><strong>Hierarchical queries</strong>: Clients can fetch nested data in a single request.</li>
+</ul>
+<ul>
+<li><strong>Real-time updates</strong>: Supports subscriptions for real-time data streaming.</li>
+</ul>
+<p>---</p>
+<h2>Why Use GraphQL in .NET Core Applications?</h2>
+<p>.NET Core is a cross-platform, high-performance framework for building modern applications. When combined with GraphQL, it becomes a powerful tool for creating APIs that are both flexible and efficient. Here’s why you should consider using GraphQL in your .NET Core projects:</p>
+<ol>
+<li><strong>Client-driven data fetching</strong>: Clients can specify the exact fields they need, reducing payload size and improving performance.</li>
+</ol>
+<ol>
+<li><strong>Reduced number of requests</strong>: Fetch related data in a single query, minimizing round trips to the server.</li>
+</ol>
+<ol>
+<li><strong>Strongly-typed schema</strong>: Leverages .NET’s type system to ensure consistency and reduce runtime errors.</li>
+</ol>
+<ol>
+<li><strong>Scalability</strong>: GraphQL’s flexibility makes it easier to adapt to changing client requirements without modifying the backend extensively.</li>
+</ol>
+<p>---</p>
+<h2>Setting Up GraphQL in a .NET Core Application</h2>
+<p>Let’s walk through the process of integrating GraphQL into a .NET Core application. We’ll use the popular <strong>HotChocolate</strong> library, which is a feature-rich GraphQL implementation for .NET.</p>
+<h3>Step 1: Create a New .NET Core Project</h3>
+<p>Start by creating a new .NET Core Web API project:</p>
+<pre><code>bash
+dotnet new webapi -n GraphQLDemo
+cd GraphQLDemo</code></pre>
+<h3>Step 2: Install Required NuGet Packages</h3>
+<p>Install the HotChocolate.AspNetCore package and its dependencies:</p>
+<pre><code>bash
+dotnet add package HotChocolate.AspNetCore
+dotnet add package HotChocolate.Data.EntityFramework</code></pre>
+<h3>Step 3: Define Your Data Model</h3>
+<p>For demonstration purposes, let’s create a simple <code>Book</code> model:</p>
+<pre><code>csharp
+public class Book
+{
+    public int Id { get; set; }
+    public string Title { get; set; }
+    public string Author { get; set; }
 }</code></pre>
-<p>type Post {</p>
+<h3>Step 4: Configure Entity Framework Core</h3>
+<p>Set up Entity Framework Core to manage the database. Add a <code>DbContext</code> class:</p>
+<pre><code>csharp
+using Microsoft.EntityFrameworkCore;</code></pre>
+<p>public class AppDbContext : DbContext</p>
 <pre><code>
-  status: PostStatus!
+{
+    public DbSet Books { get; set; }</code></pre>
+<p>public AppDbContext(DbContextOptions options) : base(options)</p>
+<pre><code>
+    {
+    }
 }</code></pre>
-<h4>4. Pagination for Large Lists</h4>
-<p>When dealing with lists of items that could grow large, implement pagination using arguments such as <code>limit</code> and <code>offset</code>, or cursor-based pagination.</p>
-<pre><code>graphql
-type Query {
-  getPosts(limit: Int = 10, offset: Int = 0): [Post!]!
+<p>Register the <code>DbContext</code> in <code>Program.cs</code>:</p>
+<pre><code>csharp
+builder.Services.AddDbContext(options =&gt;
+    options.UseInMemoryDatabase("BooksDb"));</code></pre>
+<h3>Step 5: Define the GraphQL Schema</h3>
+<p>Create a <code>Query</code> class to define the root query:</p>
+<pre><code>csharp
+public class Query
+{
+    [UseProjection]
+    public IQueryable GetBooks([Service] AppDbContext context)
+    {
+        return context.Books;
+    }
 }</code></pre>
-<h4>5. Versioning Through Deprecation</h4>
-<p>Instead of versioning your API (like REST), deprecate old fields and introduce new ones. This allows clients to migrate gradually without breaking existing functionality.</p>
+<p>Here, <code>[UseProjection]</code> optimizes the query by selecting only the requested fields.</p>
+<h3>Step 6: Configure GraphQL Middleware</h3>
+<p>Add GraphQL services and middleware in <code>Program.cs</code>:</p>
+<pre><code>csharp
+builder.Services
+    .AddGraphQLServer()
+    .AddQueryType()
+    .AddProjections();</code></pre>
+<p><code>app.MapGraphQL();</code></p>
+<p> </p>
+<h3>Step 7: Populate Sample Data</h3>
+<p>Seed the database with some sample books in <code>Program.cs</code>:</p>
+<pre><code>csharp
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService();
+    dbContext.Books.AddRange(
+        new Book { Title = "The Great Gatsby", Author = "F. Scott Fitzgerald" },
+        new Book { Title = "1984", Author = "George Orwell" }
+    );
+    dbContext.SaveChanges();
+}</code></pre>
+<h3>Step 8: Run the Application</h3>
+<p>Start the application:</p>
+<pre><code>bash
+dotnet run</code></pre>
+<p>Navigate to <code>/graphql</code> in your browser to access the GraphQL playground. You can now execute queries like this:</p>
 <pre><code>graphql
-type User {
-  username: String @deprecated(reason: "Use 'name' instead")
-  name: String!
+{
+  books {
+    title
+    author
+  }
+}</code></pre>
+<p>The response will look like this:</p>
+<pre><code>json
+{
+  "data": {
+    "books": [
+      { "title": "The Great Gatsby", "author": "F. Scott Fitzgerald" },
+      { "title": "1984", "author": "George Orwell" }
+    ]
+  }
 }</code></pre>
 <p>---</p>
-<h3>Conclusion</h3>
-<p>Designing a well-thought-out GraphQL schema is crucial to building efficient, flexible, and maintainable APIs. By focusing on strong typing, nested data structures, and best practices like pagination and deprecation, you can create a robust schema that meets the needs of both your frontend and backend teams.</p>
-<p>Remember, the schema is the backbone of your GraphQL API, and investing time upfront in good design will pay dividends in scalability, performance, and ease of use for your consumers.</p>
-<p><a href="https://aymengn.github.io/graphql/graphql-playground-exploring-the-graphiql-interface.html">GraphQL Playground: Exploring the GraphiQL Interface</a></p>
-<p><a href="https://aymengn.github.io/graphql/graphql-fragments-reusing-query-logic.html">GraphQL Fragments: Reusing Query Logic</a></p>
-<p><a href="https://aymengn.github.io/graphql/understanding-graphql-scalars-and-enums.html">Understanding GraphQL Scalars and Enums</a></p>
+<h2>Advanced Features of GraphQL in .NET Core</h2>
+<p>Once you’ve set up the basics, you can explore advanced features to enhance your GraphQL API:</p>
+<ol>
+<li><strong>Mutations</strong>: Allow clients to modify data (e.g., add, update, or delete books).</li>
+</ol>
+<ol>
+<li><strong>Subscriptions</strong>: Enable real-time updates using WebSockets.</li>
+</ol>
+<ol>
+<li><strong>Pagination</strong>: Implement efficient data fetching for large datasets.</li>
+</ol>
+<ol>
+<li><strong>Authentication and Authorization</strong>: Secure your API using JWT or other authentication mechanisms.</li>
+</ol>
+<ol>
+<li><strong>DataLoader</strong>: Optimize N+1 query problems by batching and caching requests.</li>
+</ol>
+<p>---</p>
+<h2>Conclusion</h2>
+<p>GraphQL offers a modern approach to building APIs that are flexible, efficient, and client-focused. By integrating GraphQL into your .NET Core applications using libraries like HotChocolate, you can deliver robust APIs that meet the demands of today’s dynamic applications.</p>
+<p>Whether you’re building a small-scale project or a large enterprise system, GraphQL’s ability to adapt to client needs makes it a valuable addition to your toolkit. Start experimenting with GraphQL in your .NET Core projects today, and unlock the full potential of your APIs!</p>
+<p>---</p>
+<p>Feel free to share your thoughts, experiences, or questions in the comments below. Happy coding! 🚀</p>
+<p><a href="https://aymengn.github.io/graphql/building-a-graphql-server-with-fastapi-python.html">Building a GraphQL Server with FastAPI (Python)</a></p>
+<p><a href="https://aymengn.github.io/graphql/graphql-with-go-golang-getting-started.html">GraphQL with Go (Golang): Getting Started</a></p>
+<p><a href="https://aymengn.github.io/graphql/react-and-graphql-fetching-data-with-apollo-client.html">React and GraphQL: Fetching Data with Apollo Client</a></p>
             ]]>
         </content>
     </entry>
